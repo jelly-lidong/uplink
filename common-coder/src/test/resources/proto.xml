@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<protocol name="主协议">
+    <header name="主协议头">
+        <node>
+            <name>版本号</name>
+            <length>1</length>
+            <lengthUnit>BYTE</lengthUnit>
+            <value>80</value>
+            <valueType>HEX</valueType>
+            <endianType>BIG_BYTE</endianType>
+        </node>
+        <node>
+            <name>主协议体长度</name>
+            <length>4</length>
+            <lengthUnit>BYTE</lengthUnit>
+            <valueType>SIGNED_INT</valueType>
+            <endianType>LITTLE_BYTE</endianType>
+            <depOnBody>true</depOnBody>
+            <calFuncName>数据区长度计算</calFuncName>
+            <calFuncExp>x-1</calFuncExp>
+            <reverseCalFuncName>表达式计算</reverseCalFuncName>
+            <reverseCalFuncExp>x+1</reverseCalFuncExp>
+        </node>
+    </header>
+    <body name="主协议体">
+        <header name="副协议头">
+            <node>
+                <name>版本</name>
+                <length>2</length>
+                <value>A1B1</value>
+                <lengthUnit>BYTE</lengthUnit>
+                <valueType>HEX</valueType>
+                <endianType>BIG_BYTE</endianType>
+            </node>
+            <node>
+                <name>副协议体长度</name>
+                <length>4</length>
+                <lengthUnit>BYTE</lengthUnit>
+                <valueType>SIGNED_INT</valueType>
+                <endianType>LITTLE_BYTE</endianType>
+                <depOnBody>true</depOnBody>
+                <calFuncName>数据区长度计算</calFuncName>
+                <calFuncExp>x-2</calFuncExp>
+                <reverseCalFuncName>表达式计算</reverseCalFuncName>
+                <reverseCalFuncExp>x+2</reverseCalFuncExp>
+            </node>
+        </header>
+        <body name="副协议体">
+            <node>
+                <name>固定值</name>
+                <length>4</length>
+                <value>1024</value>
+                <lengthUnit>BYTE</lengthUnit>
+                <valueType>SIGNED_INT</valueType>
+                <endianType>LITTLE_BYTE</endianType>
+            </node>
+            <node>
+                <name>参数1</name>
+                <length>4</length>
+                <lengthUnit>BYTE</lengthUnit>
+                <valueType>FLOAT</valueType>
+                <endianType>BIG_BYTE</endianType>
+                <calFuncName>表达式计算</calFuncName>
+                <calFuncExp>x*1.25</calFuncExp>
+                <reverseCalFuncName>表达式计算</reverseCalFuncName>
+                <reverseCalFuncExp>x/1.25</reverseCalFuncExp>
+            </node>
+        </body>
+        <check name="副协议校验区">
+            <node>
+                <name>副协议数据区CRC码</name>
+                <length>2</length>
+                <lengthUnit>BYTE</lengthUnit>
+                <valueType>UNSIGNED_INT</valueType>
+                <endianType>BIG_BYTE</endianType>
+                <calFuncName>CRC计算</calFuncName>
+            </node>
+        </check>
+    </body>
+    <check name="主协议校验区">
+        <node>
+            <name>主协议数据区CRC码</name>
+            <length>2</length>
+            <lengthUnit>BYTE</lengthUnit>
+            <valueType>UNSIGNED_INT</valueType>
+            <endianType>BIG_BYTE</endianType>
+            <calFuncName>CRC计算</calFuncName>
+        </node>
+    </check>
+</protocol>

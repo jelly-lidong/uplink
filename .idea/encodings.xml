@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/common-coder/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/common-model/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/common-orbit/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/common-utils/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/orbit-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/orekit-tutorials-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/server-consumer/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/server-liteflow/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/server-provider/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/service-cmd-coder/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/service-gateway/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/service-mission-planning/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/service-mission-preparation/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/service-orbit-propagation/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/service-resource-manager/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/service-task-manager/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
+  </component>
+</project>

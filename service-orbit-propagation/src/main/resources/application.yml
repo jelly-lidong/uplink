@@ -1,0 +1,56 @@
+server:
+  port: 8001
+spring:
+  application:
+    name: orbit-prediction-service
+  cloud:
+    nacos:
+      config:
+        server-addr: 127.0.0.1:8848
+        enabled: true # 如果不想使用 Nacos 进行配置管理，设置为 false 即可
+        group: DEFAULT_GROUP # 组，默认为 DEFAULT_GROUP
+        file-extension: yaml # 配置内容的数据格式，默认为 properties
+        # nacos用户名
+        username: nacos
+        # nacos密码
+        password: nacos
+
+logging:
+  config: classpath:logback-spring.xml
+  level:
+    root: INFO
+
+
+
+
+
+  # 配置Thymeleaf模板
+#  thymeleaf:
+#    cache: false                      # 是否有模板缓存
+#    prefix: classpath:/templates/     # 模板放置的位置
+#    suffix: .html                     # 模板后缀
+#    mode: HTML                        # 模板类型
+#    encoding: UTF-8                   # 模板编码
+
+#  devtools:
+#    restart:
+#      enabled: true  #设置开启热部署
+#      additional-paths: src/main/java #重启目录
+#      exclude: WEB-INF/**
+#    thymeleaf:
+#      cache: false #使用Thymeleaf模板引擎，关闭缓存
+#  mvc:
+#    pathmatch:
+#      matching-strategy: ANT_PATH_MATCHER
+
+
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include: *
+
+#arthas:
+#  agent-id: cipher-server-local #自定义服务在arthas中的名称
+#  tunnel-server: ws://192.168.1.66:7777/ws  # 远程管理平台arthas tunnel的地址
+#  app-name: nacos-provider # 当前服务名，如果不配置agent-id会自动生成服务名加下划线随机值的agent-id

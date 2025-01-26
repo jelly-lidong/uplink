@@ -1,0 +1,21 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: service-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: service-task-manager
+          uri: http://localhost:8002
+          predicates:
+            - Path=/task/**
+
+        - id: service-resource-manager
+          uri: http://localhost:8001
+          predicates:
+            - Path=/resource/**
+

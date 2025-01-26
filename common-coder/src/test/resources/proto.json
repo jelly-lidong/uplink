@@ -1,0 +1,151 @@
+{
+  "headers": [
+    {
+      "name": "主协议头",
+      "nodes": [
+        {
+          "calFuncExp": "",
+          "calFuncName": "",
+          "endianType": "BIG_BYTE",
+          "depOnNodeCalFuncName": "",
+          "depOnNodeName": "",
+          "valueType": "UNSIGNED_INT",
+          "lengthUnit": "BYTE",
+          "length": 4,
+          "name": "节点1",
+          "depOnNodeCalFuncExp": "",
+          "reverseCalFuncName": "",
+          "reverseCalFuncExp": ""
+        },
+        {
+          "calFuncExp": "",
+          "calFuncName": "",
+          "endianType": "LITTLE_BYTE",
+          "depOnNodeCalFuncName": "",
+          "depOnNodeName": "",
+          "valueType": "SIGNED_INT",
+          "lengthUnit": "BYTE",
+          "length": 4,
+          "name": "节点2",
+          "depOnNodeCalFuncExp": "",
+          "reverseCalFuncName": "",
+          "reverseCalFuncExp": ""
+        }
+      ]
+    }
+  ],
+  "bodies": [
+    {
+      "name": "主协议体",
+      "headers": [
+        {
+          "name": "副协议头",
+          "nodes": [
+            {
+              "calFuncExp": "",
+              "calFuncName": "",
+              "endianType": "BIG_BYTE",
+              "depOnNodeCalFuncName": "",
+              "depOnNodeName": "",
+              "lengthUnit": "BYTE",
+              "length": 4,
+              "name": "节点1",
+              "depOnNodeCalFuncExp": "",
+              "reverseCalFuncName": "",
+              "reverseCalFuncExp": ""
+            },
+            {
+              "calFuncExp": "",
+              "calFuncName": "",
+              "endianType": "BIG_BYTE",
+              "depOnNodeCalFuncName": "",
+              "depOnNodeName": "",
+              "lengthUnit": "BYTE",
+              "length": 4,
+              "name": "节点2",
+              "depOnNodeCalFuncExp": "",
+              "reverseCalFuncName": "",
+              "reverseCalFuncExp": ""
+            }
+          ]
+        }
+      ],
+      "checks": [
+        {
+          "name": "副协议校验区",
+          "nodes": [
+            {
+              "calFuncExp": "",
+              "calFuncName": "",
+              "endianType": "BIG_BYTE",
+              "depOnNodeCalFuncName": "",
+              "depOnNodeName": "",
+              "valueType": "UNSIGNED_INT",
+              "lengthUnit": "BYTE",
+              "length": 2,
+              "name": "节点1",
+              "depOnNodeCalFuncExp": "",
+              "reverseCalFuncName": "",
+              "reverseCalFuncExp": ""
+            }
+          ]
+        }
+      ],
+      "subBodies": [
+        {
+          "name": "副协议体",
+          "nodes": [
+            {
+              "calFuncExp": "",
+              "calFuncName": "",
+              "endianType": "LITTLE_BYTE",
+              "depOnNodeCalFuncName": "",
+              "depOnNodeName": "",
+              "valueType": "BINARY",
+              "lengthUnit": "BYTE",
+              "length": 4,
+              "name": "节点1",
+              "depOnNodeCalFuncExp": "",
+              "reverseCalFuncName": "",
+              "reverseCalFuncExp": ""
+            },
+            {
+              "calFuncExp": "",
+              "calFuncName": "",
+              "endianType": "BIG_BYTE",
+              "depOnNodeCalFuncName": "",
+              "depOnNodeName": "",
+              "lengthUnit": "BYTE",
+              "length": 4,
+              "name": "节点2",
+              "depOnNodeCalFuncExp": "",
+              "reverseCalFuncName": "",
+              "reverseCalFuncExp": ""
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "name": "主协议校验区",
+      "nodes": [
+        {
+          "calFuncExp": "",
+          "calFuncName": "",
+          "endianType": "BIG_BYTE",
+          "depOnNodeCalFuncName": "",
+          "depOnNodeName": "",
+          "valueType": "UNSIGNED_INT",
+          "lengthUnit": "BYTE",
+          "length": 2,
+          "name": "节点1",
+          "depOnNodeCalFuncExp": "",
+          "reverseCalFuncName": "",
+          "reverseCalFuncExp": ""
+        }
+      ]
+    }
+  ]
+}

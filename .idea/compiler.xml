@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="service-resource-manager" />
+        <module name="service-gateway" />
+        <module name="service-mission-planning" />
+        <module name="common-model" />
+        <module name="service-orbit-propagation" />
+        <module name="service-mission-preparation" />
+        <module name="common-coder" />
+        <module name="common-orbit" />
+        <module name="common-utils" />
+        <module name="service-cmd-coder" />
+        <module name="service-task-manager" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="orbit-service" target="1.8" />
+      <module name="orekit-tutorials-service" target="17" />
+      <module name="server-consumer" target="1.8" />
+      <module name="server-liteflow" target="1.8" />
+      <module name="server-provider" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="common-coder" options="-parameters" />
+      <module name="common-model" options="-parameters" />
+      <module name="common-orbit" options="-parameters" />
+      <module name="common-utils" options="-parameters" />
+      <module name="orbit-service" options="-parameters" />
+      <module name="orekit-tutorials-service" options="-parameters" />
+      <module name="server-consumer" options="-parameters" />
+      <module name="server-liteflow" options="-parameters" />
+      <module name="server-provider" options="-parameters" />
+      <module name="service-cmd-coder" options="-parameters" />
+      <module name="service-gateway" options="-parameters" />
+      <module name="service-mission-planning" options="-parameters" />
+      <module name="service-mission-preparation" options="-parameters" />
+      <module name="service-orbit-propagation" options="-parameters" />
+      <module name="service-resource-manager" options="-parameters" />
+      <module name="service-task-manager" options="-parameters" />
+    </option>
+  </component>
+</project>
