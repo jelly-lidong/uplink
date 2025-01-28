@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.*;
 
 
 @Api(tags = "地面站管理接口")
-@RestController
+
+@CrossOrigin@RestController
 @RequestMapping("/resource/ground-stations")
 @RequiredArgsConstructor
 public class GroundStationController {

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Tag(name = "任务模板约束管理")
-@RestController
+@CrossOrigin@RestController
 @RequestMapping("/task/template/constraint")
 @RequiredArgsConstructor
 public class TaskTemplateConstraintController {

@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @Api(tags = "约束管理接口")
+@CrossOrigin
 @RestController
 @RequestMapping("/task/constraints")
 @RequiredArgsConstructor

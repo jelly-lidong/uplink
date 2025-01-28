@@ -12,7 +12,7 @@ import java.util.List;
 
 
 @Api(tags = "任务约束管理接口")
-@RestController
+@CrossOrigin@RestController
 @RequestMapping("/task/task-constraints")
 @RequiredArgsConstructor
 public class TaskConstraintController {

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 @Api(tags = "卫星载荷管理接口")
-@RestController
+@CrossOrigin@RestController
 @RequestMapping("/resource/payloads")
 @RequiredArgsConstructor
 public class PayloadController {

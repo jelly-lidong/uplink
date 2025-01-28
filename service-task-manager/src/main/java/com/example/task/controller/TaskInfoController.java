@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @Api(tags = "任务信息管理接口")
-@RestController
+@CrossOrigin@RestController
 @RequestMapping("/task/task-infos")
 @RequiredArgsConstructor
 public class TaskInfoController {

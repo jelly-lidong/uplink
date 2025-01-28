@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @Api(tags = "任务模板管理接口")
-@RestController
+@CrossOrigin@RestController
 @RequestMapping("/task/task-templates")
 @RequiredArgsConstructor
 public class TaskTemplateController {

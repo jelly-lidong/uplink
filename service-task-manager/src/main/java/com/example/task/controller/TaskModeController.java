@@ -12,7 +12,7 @@ import java.util.List;
 
 
 @Api(tags = "任务模式管理接口")
-@RestController
+@CrossOrigin@RestController
 @RequestMapping("/task/task-modes")
 @RequiredArgsConstructor
 public class TaskModeController {

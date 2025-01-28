@@ -14,7 +14,7 @@ import java.util.List;
 
 
 @Api(tags = "卫星管理接口")
-@RestController
+@CrossOrigin@RestController
 @RequestMapping("/resource/satellites")
 @RequiredArgsConstructor
 public class SatelliteController {
