@@ -19,25 +19,28 @@
 
   <dependencies>
     <!--        swagger可视化坐标-->
-<!--
--->
+    <!--
+    -->
 
     <!-- Gateway -->
     <dependency>
       <groupId>org.springframework.cloud</groupId>
       <artifactId>spring-cloud-starter-gateway</artifactId>
     </dependency>
-
+    <dependency>
+      <groupId>com.alibaba.cloud</groupId>
+      <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+    </dependency>
     <!-- Swagger -->
-<!--    <dependency>-->
-<!--      <groupId>io.springfox</groupId>-->
-<!--      <artifactId>springfox-swagger2</artifactId>-->
-<!--    </dependency>-->
+    <!--    <dependency>-->
+    <!--      <groupId>io.springfox</groupId>-->
+    <!--      <artifactId>springfox-swagger2</artifactId>-->
+    <!--    </dependency>-->
 
-<!--    <dependency>-->
-<!--      <groupId>io.springfox</groupId>-->
-<!--      <artifactId>springfox-swagger-ui</artifactId>-->
-<!--    </dependency>-->
+    <!--    <dependency>-->
+    <!--      <groupId>io.springfox</groupId>-->
+    <!--      <artifactId>springfox-swagger-ui</artifactId>-->
+    <!--    </dependency>-->
 
 
   </dependencies>

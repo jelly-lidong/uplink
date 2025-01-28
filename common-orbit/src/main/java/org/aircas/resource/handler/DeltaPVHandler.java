@@ -7,13 +7,14 @@ import org.orekit.propagation.SpacecraftState;
 import org.orekit.propagation.sampling.OrekitFixedStepHandler;
 import org.orekit.utils.PVCoordinatesProvider;
 import org.orekit.utils.TimeStampedPVCoordinates;
+
 /**
  * 位置速度差异处理器
- * 
+ *
  * <p>
  * 该类用于计算和记录航天器实际状态与预期状态之间的位置和速度差异。
  * </p>
- * 
+ *
  * <p>
  * 主要功能:
  * <ul>
@@ -22,7 +23,7 @@ import org.orekit.utils.TimeStampedPVCoordinates;
  * <li>提供位置和速度差异的时间序列数据</li>
  * </ul>
  * </p>
- * 
+ *
  * <p>
  * 使用场景:
  * <ul>
@@ -31,7 +32,7 @@ import org.orekit.utils.TimeStampedPVCoordinates;
  * <li>轨道误差分析</li>
  * </ul>
  * </p>
- * 
+ *
  * <p>
  * 技术细节:
  * <ul>

@@ -13,12 +13,11 @@ spring:
     pathmatch:
       matching-strategy: ant_path_matcher
   cloud:
-    openfeign:
-      client:
-        config:
-          default:
-            connectTimeout: 5000
-            readTimeout: 5000
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848  # Nacos 服务器地址
+        namespace: public            # 可选，指定命名空间
+
 
 mybatis-plus:
   configuration:
