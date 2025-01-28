@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import java.util.List;
 import lombok.Data;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
@@ -41,6 +42,10 @@ public class GroundStation {
     
     @Schema(description = "站点状态", example = "正常运行")
     private String status;
+
+    @TableField(exist = false)
+    @Schema(description = "地面站设备列表")
+    private List<GroundEquipment> groundEquipments;
     
     @Schema(description = "描述信息")
     private String description;

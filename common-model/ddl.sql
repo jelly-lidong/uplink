@@ -82,8 +82,7 @@ create index idx_status
 
 create table t_satellite
 (
-    id                  bigint auto_increment comment '卫星ID'
-        primary key,
+    id                  bigint auto_increment comment '卫星ID' primary key,
     satellite_name_cn   varchar(100)                       not null comment '卫星中文名称',
     satellite_name_en   varchar(100)                       not null comment '卫星英文名称',
     satellite_code      varchar(50)                        null comment '卫星编号',
@@ -109,6 +108,20 @@ create table t_satellite
         unique (satellite_code)
 )
     comment '卫星信息';
+
+create table t_satellite_group
+(
+    id                  bigint auto_increment comment '卫星ID' primary key,
+    group_name   varchar(100)                       not null comment '卫星组名称',
+    group_desc   varchar(100)                       null comment '卫星组描述',
+    group_status      varchar(50)                        null comment '卫星组状态',
+    create_time         datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    update_time         datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    constraint group_name
+        unique (group_name)
+)
+    comment '卫星信息';
+
 
 create table t_payload
 (

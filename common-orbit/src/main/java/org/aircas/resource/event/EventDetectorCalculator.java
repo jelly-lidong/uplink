@@ -52,6 +52,9 @@ public abstract class EventDetectorCalculator {
         eventDetectorCalculators.add(eventDetectorCalculator);
     }
 
+
+    public abstract String getName();
+
     /**
      * 处理事件检测
      *

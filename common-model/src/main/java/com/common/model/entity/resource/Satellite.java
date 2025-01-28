@@ -19,6 +19,9 @@ public class Satellite {
     @TableId(type = IdType.AUTO)
     @Schema(description = "卫星ID")
     private Long id;
+
+    @Schema(description = "卫星组ID")
+    private Long satelliteGroupId;
     
     @Schema(description = "卫星中文名称", required = true)
     private String satelliteNameCn;
@@ -78,6 +81,10 @@ public class Satellite {
     @Schema(description = "创建时间")
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
+
+    @TableField(exist = false)
+    @Schema(description = "载荷列表")
+    private List<Payload> payloads;
     
     @Schema(description = "更新时间")
     @TableField(fill = FieldFill.INSERT_UPDATE)

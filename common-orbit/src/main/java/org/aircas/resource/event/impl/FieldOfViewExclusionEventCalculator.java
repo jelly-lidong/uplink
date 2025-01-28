@@ -33,7 +33,12 @@ public class FieldOfViewExclusionEventCalculator extends EventDetectorCalculator
         this.threshold = threshold;
     }
 
-    @Override
+  @Override
+  public String getName() {
+    return "视场角排除";
+  }
+
+  @Override
     public List<TimeInterval> calculate(Propagator satellitePropagator, Propagator targetPropagator, List<TimeInterval> intervals) {
         List<TimeInterval> timeIntervals = new ArrayList<>();
         for (TimeInterval interval : intervals) {

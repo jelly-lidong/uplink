@@ -36,7 +36,12 @@ public class DistanceExclusionEventCalculator extends EventDetectorCalculator {
         this.maxCheck = maxCheck;
     }
 
-    @Override
+  @Override
+  public String getName() {
+    return "距离";
+  }
+
+  @Override
     public List<TimeInterval> calculate(Propagator satellitePropagator, Propagator targetPropagator, List<TimeInterval> intervals) {
         List<TimeInterval> timeIntervals = new ArrayList<>();
         for (TimeInterval interval : intervals) {

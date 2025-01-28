@@ -2,6 +2,8 @@ package com.common.model.entity.task;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
+import com.common.model.entity.resource.GroundStation;
+import com.common.model.entity.resource.Satellite;
 import com.common.model.enums.TaskStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
@@ -59,13 +61,22 @@ public class TaskInfo {
     @Schema(description = "任务卫星ID集合", example = "['1', '2', '3']")
     private List<String> taskSatelliteIds;
 
+    @TableField(exist = false)
+    private List<Satellite> taskSatellites;
+
     @TableField(typeHandler = JacksonTypeHandler.class)
     @Schema(description = "目标卫星ID集合", example = "['1', '2', '3']")
     private List<String> targetSatelliteIds;
 
+    @TableField(exist = false)
+    private List<Satellite> targetSatellites;
+
     @TableField(typeHandler = JacksonTypeHandler.class)
     @Schema(description = "地面站ID集合", example = "['1', '2', '3']")
     private List<String> groundStationIds;
+
+    @TableField(exist = false)
+    private List<GroundStation> groundStations;
 
     @TableField(exist = false)
     private List<TaskConstraint> taskConstraints;

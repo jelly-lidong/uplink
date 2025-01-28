@@ -62,7 +62,12 @@ public class EarthAtmosphereExclusionEventCalculator extends EventDetectorCalcul
         this.threshold = threshold;
     }
 
-    @Override
+  @Override
+  public String getName() {
+    return "地气光遮蔽角";
+  }
+
+  @Override
     public List<TimeInterval> calculate(Propagator satellitePropagator, Propagator targetPropagator, List<TimeInterval> intervals) {
         List<TimeInterval> timeIntervals = new ArrayList<>();
         for (TimeInterval interval : intervals) {
