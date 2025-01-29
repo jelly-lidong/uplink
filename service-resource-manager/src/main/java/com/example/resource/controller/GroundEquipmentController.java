@@ -1,7 +1,7 @@
 package com.example.resource.controller;
 
-import com.common.model.response.Result;
 import com.common.model.entity.resource.GroundEquipment;
+import com.common.model.response.Result;
 import com.example.resource.service.GroundEquipmentService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -20,7 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @Api(tags = "地面站装备管理接口")
-@CrossOrigin@RestController
+@CrossOrigin
+@RestController
 @RequestMapping("/resource/ground-equipments")
 @RequiredArgsConstructor
 public class GroundEquipmentController {

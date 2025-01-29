@@ -34,6 +34,18 @@ public class TaskConstraint {
     @Schema(description = "约束最大值")
     private Double maxValue;
 
+    @Schema(description = "约束值")
+    private Double value;
+
+    @Schema(description = "最大迭代次数")
+    private int maxIter;
+
+    @Schema(description = "最大检查次数")
+    private double maxCheck;
+
+    @Schema(description = "约束阈值")
+    private double threshold;
+
     @Schema(description = "约束数据类型：1-数值，2-字符串，3-布尔，4-日期")
     private Integer dataType;
 
@@ -53,4 +65,7 @@ public class TaskConstraint {
     @Schema(description = "更新时间")
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
+
+
+
 } 
