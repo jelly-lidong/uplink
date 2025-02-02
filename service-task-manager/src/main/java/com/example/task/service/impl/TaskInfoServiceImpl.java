@@ -12,6 +12,7 @@ import com.example.task.service.TaskConstraintService;
 import com.example.task.service.TaskInfoService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.aircas.orbit.util.TreeUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -30,6 +31,7 @@ public class TaskInfoServiceImpl extends ServiceImpl<TaskInfoMapper, TaskInfo> i
     taskConstraintService.removeByTaskId(taskInfo.getId());
     if (CollectionUtils.isNotEmpty(taskConstraints)) {
       for (TaskConstraint taskConstraint : taskConstraints) {
+        taskConstraint.setId(null);
         taskConstraint.setTaskId(taskInfo.getId());
       }
       taskConstraintService.saveBatch(taskConstraints);
@@ -78,7 +80,17 @@ public class TaskInfoServiceImpl extends ServiceImpl<TaskInfoMapper, TaskInfo> i
       List<TaskConstraint> constraintList = taskConstraintService.getByTaskId(taskInfo.getId());
       taskInfo.setTaskConstraints(constraintList);
     }
-
+    // 构建树形结构
+    List<TaskInfo> tree = TreeUtil.makeTree(
+        infoPage.getRecords(),
+        // 判断根节点:parentId为null或0的为根节点
+        task -> task.getParentId() == null || task.getParentId() == 0L,
+        // 判断父子关系:当前节点的parentId等于父节点的id
+        (parent, child) -> parent.getId().equals(child.getParentId()),
+        // 设置子节点
+        TaskInfo::setChildren
+    );
+    infoPage.setRecords(tree);
     return infoPage;
   }
 

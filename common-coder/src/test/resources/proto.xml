@@ -8,6 +8,7 @@
             <value>80</value>
             <valueType>HEX</valueType>
             <endianType>BIG_BYTE</endianType>
+
         </node>
         <node>
             <name>主协议体长度</name>
@@ -56,6 +57,31 @@
             </node>
             <node>
                 <name>参数1</name>
+                <isOptional>true</isOptional>
+                <length>4</length>
+                <lengthUnit>BYTE</lengthUnit>
+                <valueType>FLOAT</valueType>
+                <endianType>BIG_BYTE</endianType>
+                <calFuncName>表达式计算</calFuncName>
+                <calFuncExp>x*1.25</calFuncExp>
+                <reverseCalFuncName>表达式计算</reverseCalFuncName>
+                <reverseCalFuncExp>x/1.25</reverseCalFuncExp>
+            </node>
+            <node>
+                <name>参数2</name>
+                <isOptional>true</isOptional>
+                <length>4</length>
+                <lengthUnit>BYTE</lengthUnit>
+                <valueType>FLOAT</valueType>
+                <endianType>BIG_BYTE</endianType>
+                <calFuncName>表达式计算</calFuncName>
+                <calFuncExp>x*1.25</calFuncExp>
+                <reverseCalFuncName>表达式计算</reverseCalFuncName>
+                <reverseCalFuncExp>x/1.25</reverseCalFuncExp>
+            </node>
+            <node>
+                <name>参数3</name>
+                <isOptional>true</isOptional>
                 <length>4</length>
                 <lengthUnit>BYTE</lengthUnit>
                 <valueType>FLOAT</valueType>

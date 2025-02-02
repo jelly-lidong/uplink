@@ -1,0 +1,52 @@
+# 光标规则配置
+{
+  # 默认规则
+  "*": {
+    "cursorMemory": true,
+    "cursorBlinkRate": 530,
+    "cursorStyle": "line",
+    "cursorWidth": 2
+  },
+
+  # 特定文件类型规则
+  "*.java": {
+    "cursorMemory": true,
+    "cursorBlinkRate": 530,
+    "cursorStyle": "line",
+    "cursorWidth": 2
+  },
+
+  "*.xml": {
+    "cursorMemory": true,
+    "cursorBlinkRate": 530
+  },
+
+  "*.properties": {
+    "cursorMemory": true,
+    "cursorBlinkRate": 530
+  },
+
+  "*.yml": {
+    "cursorMemory": true,
+    "cursorBlinkRate": 530
+  },
+
+  "*.sql": {
+    "cursorMemory": true,
+    "cursorBlinkRate": 530
+  },
+
+  "pom.xml": {
+    "cursorMemory": true,
+    "cursorBlinkRate": 530
+  },
+
+  # 禁用光标记忆的文件类型
+  "*.log": {
+    "cursorMemory": false
+  },
+  
+  "*.tmp": {
+    "cursorMemory": false
+  }
+} 

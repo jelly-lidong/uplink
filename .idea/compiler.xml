@@ -26,6 +26,7 @@
       <module name="server-consumer" target="1.8" />
       <module name="server-liteflow" target="1.8" />
       <module name="server-provider" target="1.8" />
+      <module name="service-platform" target="1.8" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
@@ -44,6 +45,7 @@
       <module name="service-mission-planning" options="-parameters" />
       <module name="service-mission-preparation" options="-parameters" />
       <module name="service-orbit-propagation" options="-parameters" />
+      <module name="service-platform" options="" />
       <module name="service-resource-manager" options="-parameters" />
       <module name="service-task-manager" options="-parameters" />
     </option>

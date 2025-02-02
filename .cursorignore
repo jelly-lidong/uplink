@@ -1,0 +1,38 @@
+# Java开发相关忽略配置
+target/
+.settings/
+.idea/
+.vscode/
+.project
+.classpath
+.factorypath
+
+# 编译输出
+*.class
+*.jar
+*.war
+*.ear
+
+# 日志文件
+*.log
+logs/
+
+# Maven相关
+.mvn/
+mvnw
+mvnw.cmd
+
+# 临时文件
+*.tmp
+*.temp
+*.bak
+
+# IDE配置文件
+*.iml
+*.iws
+*.ipr
+
+# 其他
+.DS_Store
+node_modules/
+dist/ 

@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.*;
 import java.util.List;
 
 /**
- * 头部类，表示协议的头部结构。
+ * 协议头部类，表示协议的头部结构。
  */
 @EqualsAndHashCode(callSuper = true)
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -21,5 +21,4 @@ public class Header extends BaseNode {
     @XmlElement(name = "node")
     private List<Node> nodes;
 
-    // Getter 和 Setter
 } 

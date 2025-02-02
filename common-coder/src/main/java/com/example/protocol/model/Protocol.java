@@ -1,45 +1,26 @@
 package com.example.protocol.model;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import lombok.Data;
 
 /**
  * 协议类，表示整个协议结构。
  */
+@Data
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "protocol")
-
 public class Protocol {
-    @XmlElement(name = "header")
-    private Header header; // 单个 Header
 
-    @XmlElement(name = "body")
-    private Body body; // 单个 Body
+  @XmlElement(name = "header")
+  private Header header; // 单个 Header
 
-    @XmlElement(name = "check")
-    private Check check; // 单个 Check
+  @XmlElement(name = "body")
+  private Body body; // 单个 Body
 
-    // Getter 和 Setter
-    public Header getHeader() {
-        return header;
-    }
+  @XmlElement(name = "check")
+  private Node check; // 单个 Check
 
-    public void setHeader(Header header) {
-        this.header = header;
-    }
-
-    public Body getBody() {
-        return body;
-    }
-
-    public void setBody(Body body) {
-        this.body = body;
-    }
-
-    public Check getCheck() {
-        return check;
-    }
-
-    public void setCheck(Check check) {
-        this.check = check;
-    }
-} 
+}

@@ -91,10 +91,10 @@ public class ProtocolPacker {
         }
 
         //节点依赖于body
-        if (node.getDepOnBody()) {
-            node.setOnBody(body);
-            calculateValue(node); // 只依赖于同级节点
-        }
+//        if (node.getDepOnBody()) {
+//            node.setOnBody(body);
+//            calculateValue(node); // 只依赖于同级节点
+//        }
 
         String value = node.getValue();
         ValueType valueType = node.getValueType();
