@@ -1,0 +1,72 @@
+<protocol name="遥测指令">
+  <header name="一级协议头" length="8" lengthUnit="BYTE">
+    <node name="版本号" length="1" lengthUnit="BYTE" type="HEX" defValue="0x01"/>
+    <node name="状态标志位" length="3" lengthUnit="BIT" type="BIT" defValue="0b001"/>
+    <node name="优先级标志" length="5" lengthUnit="BIT" type="INT" defValue="0b10001"/>
+    <node name="协议体长度" length="4" lengthUnit="BYTE" type="INT" refValue="sum(../一级协议体.length) - 1"/>
+  </header>
+  <body name="一级协议体">
+    <header name="二级协议头">
+      <node name="版本号" length="1" lengthUnit="BYTE" type="HEX" defValue="0x01"/>
+      <node name="指令类型" length="1" lengthUnit="BYTE" type="ENUM" defValue ="温度采集">
+        <enum value="0x01">温度采集</enum>
+        <enum value="0x02">姿态调整</enum>
+      </node>
+      <node name="协议体长度" length="4" lengthUnit="BYTE" type="INT" refValue="sum(../二级协议体.length) - 1"/>
+    </header>
+    <body name="二级协议体">
+      <header name="三级协议头" length="10" lengthUnit="BYTE">
+        <!--day(x - '2020-01-01 00:00:00') -1 代表：计算时间戳距离2020年1月1日的天数-1-->
+        <node name="积日" length="8" lengthUnit="BYTE" type="TIMESTAMP" defValue="2020-01-02 12:00:01" convert="day(x - '2020-01-01 00:00:00') -1"/>
+        <!--millSeconds(x - 'currentDate') -1 代表：计算时间戳距离当前时间戳的毫秒数-1-->
+        <node name="积毫秒" length="8" lengthUnit="BYTE" type="TIMESTAMP" defValue="2020-01-02 12:00:01" convert="millSeconds(x - 'currentDate') -1"/>
+        <node name="校验使能位" length="1" lengthUnit="BIT" type="BIT" defValue="0x1"/>
+        <node name="保留位" length="5" lengthUnit="BIT" type="INT" defValue="0b00001"/>
+        <!--x >> 2 代表：将整型数据右移2位-->
+        <node name="电压值" length="2" lengthUnit="BYTE" type="INT" convert="x >> 2" optional="true" defValue="16"/>
+      </header>
+      <body name="三级协议体" length="20" lengthUnit="BYTE">
+        <nodeGroup name="姿态参数组" repeat="1">
+          <!--day(x - '2020-01-01 00:00:00') -1 代表：计算时间戳距离2020年1月1日的天数+1-->
+          <node name="积日" length="8" lengthUnit="BYTE" type="TIMESTAMP" defValue="2020-01-02 12:00:01" convert="day(x - '2020-01-01 00:00:00') + 1"/>
+          <!--millSeconds(x - 'currentDate') -1 代表：计算时间戳距离当前时间戳的秒数+1-->
+          <node name="积毫秒" length="8" lengthUnit="BYTE" type="TIMESTAMP" defValue="2020-01-02 12:00:01" convert="seconds(x - 'currentDate') + 1"/>
+          <!--代表body中参数组个数-->
+          <node name="参数组个数" length="2" lengthUnit="BYTE" type="INT" defValue="3"/>
+          <!-- 具体参数数据 -->
+          <nodeGroup name="参数组" repeat="header.参数个数">
+            <node name="参数ID" length="2" lengthUnit="BYTE" type="INT" defValue="1"/>
+            <node name="数据类型" length="1" lengthUnit="BYTE" type="ENUM" defValue="整型">
+              <enum value="0x01">整型</enum>
+              <enum value="0x02">浮点型</enum>
+              <enum value="0x03">字符串</enum>
+            </node>
+            <node name="控制位" length="2" lengthUnit="BIT" type="ENUM" defValue="正常">
+              <enum value="0b01">正常</enum>
+              <enum value="0b11">紧急</enum>
+              <enum value="0b10">调试</enum>
+            </node>
+            <node name="工作模式" length="1" lengthUnit="BYTE" type="INT" convert="if(x>80) then 'HIGH' else if(x>50) then 'MEDIUM' else 'LOW'" optional="true" defValue="100"/>
+            <node name="参数值" length="4" lengthUnit="BYTE" type="DYNAMIC" refValue="parent.数据类型" endian="LITTLE" convert="if(parent.数据类型=='整型') then x else x*0.001" defValue="100"/>
+            <node name="参数状态" length="1" lengthUnit="BYTE" type="INT" optional="true" defValue="0"/>
+            <node name="温度阈值" length="2" lengthUnit="BYTE" type="INT" convert="(x * 0.1) + 273.15" optional="true" defValue="255"/>
+          </nodeGroup>
+        </nodeGroup>
+        <!-- 填充节点示例 -->
+        <node name="填充字节" length="三级协议体.length - 姿态参数组.length" lengthUnit="BYTE" type="PADDING" value="0xAA"/>
+      </body>
+      <check name="三级协议校验" length="2" lengthUnit="BYTE">
+        <!-- 三级协议校验 -->
+        <node name="数据校验" length="2" lengthUnit="BYTE" type="CRC16" checkRange="../三级协议体"/>
+      </check>
+    </body>
+    <check name="二级协议校验" length="4" lengthUnit="BYTE">
+      <!-- 二级协议校验 -->
+      <node name="协议校验" length="4" lengthUnit="BYTE" type="CRC32"  checkRange="../二级协议体"/>
+    </check>
+  </body>
+  <check name="一级协议校验" length="4" lengthUnit="BYTE">
+    <!-- 一级协议校验 -->
+    <node name="总校验" length="4" lengthUnit="BYTE" type="CRC32" checkRange="../一级协议体"/>
+  </check>
+</protocol>

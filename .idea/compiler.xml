@@ -7,13 +7,13 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="common-cmd" />
         <module name="service-resource-manager" />
         <module name="service-gateway" />
         <module name="service-mission-planning" />
-        <module name="common-model" />
-        <module name="service-orbit-propagation" />
         <module name="service-mission-preparation" />
-        <module name="common-coder" />
+        <module name="service-orbit-propagation" />
+        <module name="common-model" />
         <module name="common-orbit" />
         <module name="common-utils" />
         <module name="service-cmd-coder" />
@@ -31,8 +31,10 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="common-coder" options="-parameters" />
+      <module name="common-cmd" options="-parameters" />
+      <module name="common-coder" options="" />
       <module name="common-model" options="-parameters" />
+      <module name="common-module" options="" />
       <module name="common-orbit" options="-parameters" />
       <module name="common-utils" options="-parameters" />
       <module name="orbit-service" options="-parameters" />
@@ -48,6 +50,9 @@
       <module name="service-platform" options="" />
       <module name="service-resource-manager" options="-parameters" />
       <module name="service-task-manager" options="-parameters" />
+      <module name="soft-cmd" options="" />
+      <module name="soft-resource" options="" />
+      <module name="soft-task-mission" options="" />
     </option>
   </component>
 </project>

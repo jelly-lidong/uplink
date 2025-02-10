@@ -13,6 +13,9 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/soft-cmd/common-coder/pom.xml" />
+        <option value="$PROJECT_DIR$/soft-cmd/common-cmd/pom.xml" />
+        <option value="$PROJECT_DIR$/soft-task-mission/service-mission-preparation/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">
@@ -23,6 +26,7 @@
         <option value="$PROJECT_DIR$/server-liteflow/pom.xml" />
         <option value="$PROJECT_DIR$/server-provider/pom.xml" />
         <option value="$PROJECT_DIR$/service-platform/pom.xml" />
+        <option value="$PROJECT_DIR$/soft-cmd/service-cmd-coder/pom.xml" />
       </set>
     </option>
   </component>
