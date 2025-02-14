@@ -34,7 +34,7 @@ public class LunarExclusionEventHandler extends EventDetectorHandler {
 
     @Override
     public String getName() {
-        return "月球";
+        return "月光遮蔽角";
     }
 
     @Override
@@ -73,12 +73,8 @@ public class LunarExclusionEventHandler extends EventDetectorHandler {
 
             // 检查初始状态
             SpacecraftState initialState = satellitePropagator.propagate(startDate);
-            if (lunarDetector.g(initialState) > 0) {
-                // 初始状态不在月球避让区内
-                TimeInterval newInterval = new TimeInterval();
-                newInterval.setStartDate(startDate);
-                timeIntervals.add(newInterval);
-            }
+
+
 
             // 传播轨道
             SpacecraftState finalState = satellitePropagator.propagate(startDate, endDate);

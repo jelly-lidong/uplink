@@ -17,47 +17,39 @@ import javax.xml.bind.annotation.XmlTransient;
 @NoArgsConstructor
 @Data
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ProtocolBody {
-
+public class NodeGroup {
+  /**
+   * 节点组名称.
+   */
   @XmlAttribute
   private String name;
+
+  /**
+   * 节点组重复次数，支持表达式，如：${dataCount}
+   */
+  @XmlAttribute
+  private String repeat;
+
   @XmlAttribute
   private Integer length;
 
+  /**
+   * 节点长度单位.
+   */
   @XmlAttribute
   @XmlJavaTypeAdapter(LengthUnitAdapter.class)
-  private LengthUnit lengthUnit;
-
-  @XmlTransient
-  private Protocol protocol;
-
-  @XmlElement(name = "header")
-  private ProtocolHeader header;
-
-  @XmlElement(name = "body")
-  private ProtocolBody subBody;
-
-  @XmlElement(name = "check")
-  private ProtocolCheck check;
+  private LengthUnit lengthUnit = LengthUnit.BYTE;
 
   @XmlElement(name = "node")
   private List<Node> nodes;
 
-  @XmlElement(name = "nodeGroup")
-  private List<NodeGroup> nodeGroups;
+  @XmlTransient
+  private ProtocolBody body;
 
   public void setNodes(List<Node> nodes) {
     this.nodes = nodes;
     if (nodes != null) {
-      nodes.forEach(node -> node.setBody(this));
+      nodes.forEach(node -> node.setGroup(this));
     }
   }
-
-  public void setNodeGroups(List<NodeGroup> nodeGroups) {
-    this.nodeGroups = nodeGroups;
-    if (nodeGroups != null) {
-      nodeGroups.forEach(group -> group.setBody(this));
-    }
-  }
-
-} 
+}

@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="SqlDialectMappings">
-    <file url="file://$PROJECT_DIR$/common-module/common-model/ddl.sql" dialect="MySQL" />
-    <file url="file://$PROJECT_DIR$/soft-resource/service-resource-manager/src/main/resources/data.sql" dialect="MySQL" />
-    <file url="file://$PROJECT_DIR$/soft-resource/service-resource-manager/src/main/resources/schema.sql" dialect="MySQL" />
-    <file url="file://$PROJECT_DIR$/soft-task-mission/service-task-manager/src/main/resources/db/migration/V1__create_task_tables.sql" dialect="MySQL" />
     <file url="PROJECT" dialect="MySQL" />
   </component>
 </project>

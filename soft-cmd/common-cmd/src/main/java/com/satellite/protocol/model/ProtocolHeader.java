@@ -27,4 +27,13 @@ public class ProtocolHeader {
     @XmlElement(name = "node")
     private List<Node> nodes;
 
+    @XmlTransient
+    private Protocol protocol;
+    
+    public void setNodes(List<Node> nodes) {
+        this.nodes = nodes;
+        if (nodes != null) {
+            nodes.forEach(node -> node.setHeader(this));
+        }
+    }
 } 

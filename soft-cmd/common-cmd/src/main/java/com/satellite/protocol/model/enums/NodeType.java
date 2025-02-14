@@ -1,15 +1,18 @@
 package com.satellite.protocol.model.enums;
 
 public enum NodeType {
+    INT("INT"),
+    FLOAT("FLOAT"),
+    DOUBLE("DOUBLE"),
     HEX("HEX"),
     BIT("BIT"),
-    INT("INT"),
     ENUM("ENUM"),
     TIMESTAMP("TIMESTAMP"),
     DYNAMIC("DYNAMIC"),
     PADDING("PADDING"),
     CRC16("CRC16"),
-    CRC32("CRC32");
+    CRC32("CRC32"),
+    STRING("STRING");
     
     private final String value;
     
