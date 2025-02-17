@@ -1,24 +1,24 @@
 package com.satellite.protocol.model;
 
 import com.satellite.protocol.core.ProtocolException;
+import com.satellite.protocol.core.expression.DefaultExpressionContext;
 import com.satellite.protocol.core.expression.Expression;
-import com.satellite.protocol.core.expression.ExpressionContext;
 import com.satellite.protocol.core.expression.ExpressionFactory;
 import com.satellite.protocol.model.adapter.LengthUnitAdapter;
 import com.satellite.protocol.model.adapter.NodeTypeAdapter;
+import com.satellite.protocol.model.enums.ByteOrder;
 import com.satellite.protocol.model.enums.LengthUnit;
 import com.satellite.protocol.model.enums.NodeType;
-import com.satellite.protocol.model.enums.ByteOrder;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import javax.xml.bind.annotation.XmlTransient;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -56,7 +56,7 @@ public class Node {
    * 节点默认值.
    */
   @XmlAttribute
-  private String defValue;
+  private String value;
 
   /**
    * 节点引用值，用于引用其他节点的值.支持某些表达式，如：${node1}.value，${node2}.length,${node2}.length -1 etc.
@@ -101,26 +101,24 @@ public class Node {
   @XmlAttribute
   private String validation;
 
-  private Object value;  // 添加value字段存储实际值
-
   /**
    * 所属协议头
    */
   @XmlTransient
   private ProtocolHeader header;
-  
+
   /**
    * 所属协议体
    */
   @XmlTransient
   private ProtocolBody body;
-  
+
   /**
    * 所属节点组
    */
   @XmlTransient
   private NodeGroup group;
-  
+
   /**
    * 获取节点所在的协议对象
    */
@@ -173,12 +171,12 @@ public class Node {
 
       // 如果包含表达式，使用表达式计算器
       Expression expression = ExpressionFactory.getExpression(length);
-      Object     result     = expression.evaluate(null, new ExpressionContext(this));
-      
+      Object     result     = expression.evaluate(null, new DefaultExpressionContext(this));
+
       if (result instanceof Number) {
         return ((Number) result).intValue();
       }
-      
+
       throw new ProtocolException("Invalid length expression result: " + result);
     } catch (Exception e) {
       System.out.println("Error evaluating length expression: " + length);

@@ -2,6 +2,7 @@ package com.satellite.protocol.model;
 
 import com.satellite.protocol.model.adapter.LengthUnitAdapter;
 import com.satellite.protocol.model.enums.LengthUnit;
+import java.util.Collection;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -43,13 +44,10 @@ public class NodeGroup {
   @XmlElement(name = "node")
   private List<Node> nodes;
 
+  @XmlElement(name = "node")
+  private List<NodeGroup> nodeGroups;
+
   @XmlTransient
   private ProtocolBody body;
 
-  public void setNodes(List<Node> nodes) {
-    this.nodes = nodes;
-    if (nodes != null) {
-      nodes.forEach(node -> node.setGroup(this));
-    }
-  }
 }

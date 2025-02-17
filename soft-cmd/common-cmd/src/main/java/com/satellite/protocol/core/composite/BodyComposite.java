@@ -15,7 +15,6 @@ public class BodyComposite extends AbstractProtocolComponent {
 
   /** 协议体对象 */
   private final ProtocolBody body;
-  private final String componentPath;
 
   /**
    * 构造函数
@@ -23,8 +22,8 @@ public class BodyComposite extends AbstractProtocolComponent {
    * @param parentPath 父组件路径
    */
   public BodyComposite(ProtocolBody body, String parentPath) {
+    super(parentPath + "/body", body.getLengthUnit());
     this.body = body;
-    this.componentPath = parentPath + "/body";
     log.debug("创建协议体组件");
     initializeChildren();
   }
@@ -70,10 +69,15 @@ public class BodyComposite extends AbstractProtocolComponent {
   @Override
   public void encode(ByteBuf buffer, ProtocolContext context) throws ProtocolException {
     log.debug("开始编码协议体");
+    int startIndex = buffer.writerIndex();
+    
     for (ProtocolComponent child : children) {
-      child.encode(buffer, context);
+        child.encode(buffer, context);
     }
-    log.debug("完成协议体编码");
+    
+    int length = buffer.writerIndex() - startIndex;
+    context.recordComponentRange(componentPath, startIndex, length, lengthUnit);
+    log.debug("完成协议体编码, 长度: {}", length);
   }
 
   @Override

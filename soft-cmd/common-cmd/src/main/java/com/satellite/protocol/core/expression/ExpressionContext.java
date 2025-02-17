@@ -3,25 +3,22 @@ package com.satellite.protocol.core.expression;
 import com.satellite.protocol.model.Node;
 import java.util.Map;
 import java.util.HashMap;
+import com.satellite.protocol.core.context.ProtocolContext;
 
-public class ExpressionContext {
-    private final Node currentNode;
-    private final Map<String, Object> variables;
+/**
+ * 表达式上下文 - 提供表达式执行所需的上下文信息
+ */
+public interface ExpressionContext {
+    /**
+     * 获取协议上下文
+     * @return 协议上下文
+     */
+    ProtocolContext getProtocolContext();
     
-    public ExpressionContext(Node currentNode) {
-        this.currentNode = currentNode;
-        this.variables = new HashMap<>();
-    }
+    Node getCurrentNode();
     
-    public Node getCurrentNode() {
-        return currentNode;
-    }
+    void setVariable(String name, Object value);
     
-    public void setVariable(String name, Object value) {
-        variables.put(name, value);
-    }
-    
-    public Object getVariable(String name) {
-        return variables.get(name);
-    }
-} 
+    Object getVariable(String name);
+}
+

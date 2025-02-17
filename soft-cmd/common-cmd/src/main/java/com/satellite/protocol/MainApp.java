@@ -18,6 +18,5 @@ public class MainApp {
     ProtocolCodec codec = new CmdProtocolCodec();
     byte[]        bytes = codec.encode(protocol);
     System.out.println(HexBin.encode(bytes));
-
   }
 }

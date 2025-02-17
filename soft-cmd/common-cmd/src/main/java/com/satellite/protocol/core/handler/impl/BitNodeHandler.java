@@ -24,7 +24,7 @@ public class BitNodeHandler extends AbstractNodeHandler {
         } else if (value instanceof Number) {
             bitValue = ((Number) value).intValue() != 0;
         } else {
-            throw new ProtocolException("Invalid value type for bit node: " + value.getClass());
+            throw new ProtocolException("Invalid value type for bit node: " + value.getClass()+ ", value: " + value);
         }
         
         byte[] bytes = new byte[1];

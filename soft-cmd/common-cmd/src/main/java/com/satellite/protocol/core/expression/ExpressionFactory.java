@@ -1,10 +1,7 @@
 package com.satellite.protocol.core.expression;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class ExpressionFactory {
-    private static final Map<String, Expression> expressionCache = new ConcurrentHashMap<>();
     
     public static Expression getExpression(String expression) {
         if (expression == null || expression.trim().isEmpty()) {
@@ -33,13 +30,12 @@ public class ExpressionFactory {
         return new SimpleExpression(expression);
     }
     
-    private static Expression createExpression(String expression) {
-        // 根据表达式创建对应的Expression实现
-        if (expression.startsWith("${")) {
-            return new ReferenceExpression(expression);
-        } else if (expression.contains("(")) {
+    public static Expression createExpression(String expression) {
+        // 函数表达式
+        if (expression.contains("(")) {
             return new FunctionExpression(expression);
         }
-        return new SimpleExpression(expression);
+        // ... 其他表达式处理 ...
+        return null; // Placeholder return, actual implementation needed
     }
 } 

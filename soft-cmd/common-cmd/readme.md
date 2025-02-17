@@ -7,6 +7,7 @@
 - Protocol: 协议对象，包含header、body和check三个部分
 - Header: 协议头，包含一组固定的节点
 - Body: 协议体，可以包含节点、节点组和子协议体
+- NodeGroup: 节点组，可以包含节点和子节点组，支持重复
 - Check: 校验部分，包含一组校验节点
 
 ### 1.2 节点类型
@@ -14,9 +15,13 @@
 - INT: 整数类型，支持1-8字节
 - FLOAT: 单精度浮点数，4字节
 - DOUBLE: 双精度浮点数，8字节
-- HEX: 十六进制数据
-- BIT: 位操作数据
-- TIMESTAMP: 时间戳
+- HEX: 十六进制数据，支持0x前缀
+- BIT: 位操作数据，支持0b前缀
+- ENUM: 枚举类型，支持多种进制表示
+- STRING: 字符串类型
+- TIMESTAMP: 时间戳，支持多种格式
+- CRC16: 16位CRC校验
+- CRC32: 32位CRC校验
 - DYNAMIC: 动态类型
 - PADDING: 填充数据
 
@@ -27,11 +32,37 @@
 - length: 节点长度
 - lengthUnit: 长度单位(BYTE/BIT)
 - byteOrder: 字节序(BIG/LITTLE)
-- defValue: 默认值
-- refValue: 引用值
+- value: 节点值
+- refValue: 引用值表达式
 - convert: 转换器
 - optional: 是否可选
 - validation: 值校验表达式
+- enumValues: 枚举值定义（仅用于ENUM类型）
+
+### 1.4 值格式支持
+1. 整数值格式：
+   - 十进制：123
+   - 十六进制：0xFF
+   - 二进制：0b1010
+   - 八进制：0777
+
+2. 枚举值格式：
+   ```xml
+   <node name="指令类型" type="ENUM" value="温度采集">
+       <enum value="0x01">温度采集</enum>
+       <enum value="0b0010">姿态调整</enum>
+       <enum value="03">数据采集</enum>
+       <enum value="4">状态查询</enum>
+   </node>
+   ```
+
+3. 时间戳格式：
+   - Unix时间戳（毫秒）：1577934001000
+   - 标准日期时间：2020-01-02 12:00:01
+   - ISO格式：2020-01-02T12:00:01
+   - 带毫秒格式：2020-01-02 12:00:01.123
+   - 斜杠分隔：2020/01/02 12:00:01
+   - 紧凑格式：20200102120001
 
 ## 2. 核心功能实现
 
@@ -141,6 +172,10 @@ public abstract class AbstractCheckFunction implements Function {
         <nodeGroup name="dataGroup" repeat="${dataCount}">
             <node name="dataType" type="INT" length="1"/>
             <node name="dataLength" type="INT" length="2"/>
+            <nodeGroup name="subDataGroup" repeat="${subDataCount}">
+                <node name="subType" type="INT" length="1"/>
+                <node name="subData" type="DYNAMIC" length="${subDataLength}"/>
+            </nodeGroup>
             <node name="data" type="DYNAMIC" length="${dataLength}"/>
         </nodeGroup>
         <node name="timestamp" type="TIMESTAMP" length="8"/>
@@ -192,9 +227,13 @@ Object value = decodedProtocol.getBody().getNode("data").getValue();
 - 优化节点依赖处理
 
 ### 5.2 使用限制
-- 节点名称必须唯一
+- 节点名称在同一层级内必须唯一
+- 节点组可以嵌套，但要注意控制嵌套深度
+- 节点组的重复次数必须能在运行时确定
 - 校验节点必须在被校验数据之后
-- 动态长度节点必须指定正确的length表达式
+- 支持的时间格式必须符合预定义的模式
+- 枚举值必须使用支持的进制格式
+- 引用路径必须正确（支持相对路径和绝对路径）
 - 注意处理字节序
 
 ### 5.3 错误处理
@@ -202,3 +241,6 @@ Object value = decodedProtocol.getBody().getNode("data").getValue();
 - 验证节点类型和长度
 - 处理表达式计算异常
 - 校验失败处理
+- 无效的枚举值定义
+- 不支持的时间格式
+- 非法的数值格式

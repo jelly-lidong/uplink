@@ -15,15 +15,14 @@ public class ProtocolComposite extends AbstractProtocolComponent {
 
   /** 协议对象,包含完整的协议定义 */
   private final Protocol protocol;
-  private final String componentPath; // 添加路径字段
 
   /**
    * 构造函数
    * @param protocol 要处理的协议对象
    */
   public ProtocolComposite(Protocol protocol) {
+    super("/protocol/" + protocol.getName(), protocol.getLengthUnit());
     this.protocol = protocol;
-    this.componentPath = "/protocol/" + protocol.getName(); // 根路径
     log.debug("创建协议组件: {}", protocol.getName());
     initializeChildren();
   }

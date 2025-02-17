@@ -14,16 +14,14 @@ import lombok.extern.slf4j.Slf4j;
 public class HeaderComposite extends AbstractProtocolComponent {
     /** 协议头对象 */
     private final ProtocolHeader header;
-    private final String componentPath;
     
     /**
      * 构造函数
      * @param header 协议头对象
      */
     public HeaderComposite(ProtocolHeader header, String parentPath) {
+        super(parentPath + "/header", header.getLengthUnit());
         this.header = header;
-        this.componentPath = parentPath + "/header";
-        log.debug("创建协议头组件");
         initializeChildren();
     }
     

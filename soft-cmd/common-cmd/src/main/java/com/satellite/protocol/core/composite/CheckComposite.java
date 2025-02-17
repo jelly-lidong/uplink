@@ -14,16 +14,15 @@ import lombok.extern.slf4j.Slf4j;
 public class CheckComposite extends AbstractProtocolComponent {
     /** 协议校验对象 */
     private final ProtocolCheck check;
-    private final String componentPath; // 添加路径字段
-    
+
     /**
      * 构造函数
      * @param check 协议校验对象
      * @param parentPath 父路径
      */
     public CheckComposite(ProtocolCheck check, String parentPath) {
+        super(parentPath + "/check", check.getLengthUnit());
         this.check = check;
-        this.componentPath = parentPath + "/check";
         log.debug("创建协议校验组件");
         initializeChildren();
     }

@@ -14,7 +14,7 @@ public class CmdProtocolCodec implements ProtocolCodec {
     ByteBuf buffer = Unpooled.buffer();
     try {
       ProtocolComponent root = new ProtocolComposite(protocol);
-      ProtocolContext context = new ProtocolContext(root);
+      ProtocolContext context = new ProtocolContext(root,buffer);
       root.encode(buffer, context);
 
       byte[] result = new byte[buffer.readableBytes()];
@@ -31,7 +31,7 @@ public class CmdProtocolCodec implements ProtocolCodec {
     try {
       Protocol          protocol = new Protocol();
       ProtocolComponent root     = new ProtocolComposite(protocol);
-      ProtocolContext context = new ProtocolContext(root);
+      ProtocolContext context = new ProtocolContext(root, buffer);
       root.decode(buffer, context);
       return protocol;
     } finally {
