@@ -12,7 +12,8 @@ public class MainApp {
 
   public static void main(String[] args) throws ProtocolException {
     // 测试解析
-    String   xmlPath  = "E:\\worksapce\\project\\uplink\\soft-cmd\\common-cmd\\protocol.xml"; // 确保路径正确
+    String   StringxmlPath  = "E:\\worksapce\\project\\uplink\\soft-cmd\\common-cmd\\protocol.xml"; // 确保路径正确
+    String   xmlPath  = "/Users/lidong/workspace/uplink/soft-cmd/common-cmd/protocol.xml"; // 确保路径正确
     Protocol protocol = ProtocolXmlParser.parseProtocolXml(xmlPath);
     System.out.println("协议对象: " + JSONObject.toJSONString(protocol));
     ProtocolCodec codec = new CmdProtocolCodec();

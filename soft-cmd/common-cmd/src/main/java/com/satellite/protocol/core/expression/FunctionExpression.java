@@ -81,43 +81,43 @@ public class FunctionExpression implements Expression {
     
     @Override
     public Object evaluate(Object value, ExpressionContext context) throws ProtocolException {
-        // 获取函数
-        Function function = FunctionRegistry.getFunction(functionName);
-        if (function == null) {
-            throw new ProtocolException("未找到函数: " + functionName);
-        }
+//        // 获取函数
+//        Function function = FunctionRegistry.getFunction(functionName);
+//        if (function == null) {
+//            throw new ProtocolException("未找到函数: " + functionName);
+//        }
+//
+//        // 构建函数调用表达式，递归处理嵌套函数
+//        StringBuilder expression = new StringBuilder(functionName);
+//        expression.append("(");
+//        for (int i = 0; i < args.length; i++) {
+//            if (i > 0) {
+//                expression.append(",");
+//            }
+//
+//            String arg = args[i];
+//            if ("x".equals(arg)) {
+//                // 处理参数占位符
+//                expression.append(value);
+//            } else if (arg.contains("(")) {
+//                // 递归处理嵌套函数
+//                FunctionExpression nested = new FunctionExpression(arg);
+//                Object nestedResult = nested.evaluate(value, context);
+//                expression.append(nestedResult);
+//            } else {
+//                expression.append(arg);
+//            }
+//        }
+//        expression.append(")");
+//
+//        // 执行函数
+//        Object result = function.execute(expression.toString(), context.getProtocolContext());
+//
+//        // 应用调整值
+//        if (result instanceof Number) {
+//            return ((Number) result).longValue() + adjustment;
+//        }
         
-        // 构建函数调用表达式，递归处理嵌套函数
-        StringBuilder expression = new StringBuilder(functionName);
-        expression.append("(");
-        for (int i = 0; i < args.length; i++) {
-            if (i > 0) {
-                expression.append(",");
-            }
-            
-            String arg = args[i];
-            if ("x".equals(arg)) {
-                // 处理参数占位符
-                expression.append(value);
-            } else if (arg.contains("(")) {
-                // 递归处理嵌套函数
-                FunctionExpression nested = new FunctionExpression(arg);
-                Object nestedResult = nested.evaluate(value, context);
-                expression.append(nestedResult);
-            } else {
-                expression.append(arg);
-            }
-        }
-        expression.append(")");
-        
-        // 执行函数
-        Object result = function.execute(expression.toString(), context.getProtocolContext());
-        
-        // 应用调整值
-        if (result instanceof Number) {
-            return ((Number) result).longValue() + adjustment;
-        }
-        
-        return result;
+        return null;
     }
 } 

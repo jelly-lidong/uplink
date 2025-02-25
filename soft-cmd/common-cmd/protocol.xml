@@ -1,4 +1,4 @@
-<protocol name="遥测指令">
+<protocol name="指令名称">
   <header name="一级协议头" length="8" lengthUnit="BYTE">
     <node name="版本号" length="1" lengthUnit="BYTE" type="HEX" value="0x01"/>
     <node name="状态标志位" length="3" lengthUnit="BIT" type="BIT" value="0b001"/>
@@ -17,9 +17,9 @@
     <body name="二级协议体">
       <header name="三级协议头" length="10" lengthUnit="BYTE">
         <!--day(x - '2020-01-01 00:00:00') -1 代表：计算时间戳距离2020年1月1日的天数-1-->
-        <node name="积日" length="8" lengthUnit="BYTE" type="TIMESTAMP" value="2020-01-02 12:00:01" convert="day(x - '2020-01-01 00:00:00') -1"/>
-        <!--millSeconds(x - 'currentDate') -1 代表：计算时间戳距离当前时间戳的毫秒数-1-->
-        <node name="积毫秒" length="8" lengthUnit="BYTE" type="TIMESTAMP" value="2020-01-02 12:00:01" convert="millSeconds(x - 'currentDate') -1"/>
+        <node name="积日" length="8" lengthUnit="BYTE" type="TIMESTAMP" value="2020-01-02 12:00:01" convert="day(x , '2020-01-01 00:00:00') - 1"/>
+        <!--millSeconds(x - '2020-01-01 00:00:00') -1 代表：计算时间戳距离当前时间戳的毫秒数-1-->
+        <node name="积毫秒" length="8" lengthUnit="BYTE" type="TIMESTAMP" value="2020-01-02 12:00:01" convert="millSeconds(x ,'2020-01-01 00:00:00') -1"/>
         <node name="校验使能位" length="1" lengthUnit="BIT" type="BIT" value="0b1"/>
         <node name="保留位" length="5" lengthUnit="BIT" type="BIT" value="0b00001"/>
         <!--x >> 2 代表：将整型数据右移2位-->
@@ -28,9 +28,9 @@
       <body name="三级协议体" length="20" lengthUnit="BYTE">
         <nodeGroup name="姿态参数组" repeat="1">
           <!--day(x - '2020-01-01 00:00:00') -1 代表：计算时间戳距离2020年1月1日的天数+1-->
-          <node name="积日" length="8" lengthUnit="BYTE" type="TIMESTAMP" value="2020-01-02 12:00:01" convert="day(x - '2020-01-01 00:00:00') + 1"/>
-          <!--millSeconds(x - 'currentDate') -1 代表：计算时间戳距离当前时间戳的秒数+1-->
-          <node name="积毫秒" length="8" lengthUnit="BYTE" type="TIMESTAMP" value="2020-01-02 12:00:01" convert="seconds(x - 'currentDate') + 1"/>
+          <node name="积日" length="8" lengthUnit="BYTE" type="TIMESTAMP" value="2020-01-02 12:00:01" convert="day(x , '2020-01-01 00:00:00') + 1"/>
+          <!--millSeconds(x - '2020-01-01 00:00:00') -1 代表：计算时间戳距离当前时间戳的秒数+1-->
+          <node name="积毫秒" length="8" lengthUnit="BYTE" type="TIMESTAMP" value="2020-01-02 12:00:01" convert="seconds(x ,'2020-01-01 00:00:00') + 1"/>
           <!--代表body中参数组个数-->
           <node name="参数组个数" length="2" lengthUnit="BYTE" type="INT" value="3"/>
           <!-- 具体参数数据 -->
@@ -52,8 +52,6 @@
             <node name="温度阈值" length="2" lengthUnit="BYTE" type="INT" convert="(x * 0.1) + 273.15" optional="true" value="255"/>
           </nodeGroup>
         </nodeGroup>
-<!--        &lt;!&ndash; 填充节点示例 &ndash;&gt;-->
-<!--        <node name="填充字节" length="${../三级协议体}.length - ${./姿态参数组}.length" lengthUnit="BYTE" type="PADDING" value="0xAA"/>-->
       </body>
       <check name="三级协议校验" length="2" lengthUnit="BYTE">
         <!-- 三级协议校验 -->

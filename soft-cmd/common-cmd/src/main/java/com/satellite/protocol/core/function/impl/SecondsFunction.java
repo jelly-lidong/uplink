@@ -1,14 +1,16 @@
 package com.satellite.protocol.core.function.impl;
 
-import com.satellite.protocol.core.function.Function;
-import com.satellite.protocol.core.context.ProtocolContext;
+import com.googlecode.aviator.runtime.function.AbstractVariadicFunction;
+import com.googlecode.aviator.runtime.function.FunctionUtils;
+import com.googlecode.aviator.runtime.type.AviatorObject;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class SecondsFunction implements Function {
+public class SecondsFunction extends AbstractVariadicFunction {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     
     @Override
@@ -17,18 +19,11 @@ public class SecondsFunction implements Function {
     }
     
     @Override
-    public Object execute(String expression, ProtocolContext context) {
-        // 解析参数 seconds('2020-01-02 00:00:00' - '2020-01-01 00:00:00')
-        String params = expression.substring(8, expression.length() - 1);
-        String[] dates = params.split("\\s*-\\s*");
-        
-        if (dates.length != 2) {
-            throw new IllegalArgumentException("秒差值表达式格式错误: " + expression);
-        }
-        
+    public AviatorObject variadicCall(Map<String, Object> env, AviatorObject... args) {
+
         // 去除日期字符串的引号
-        String date1 = dates[0].replaceAll("'", "").trim();
-        String date2 = dates[1].replaceAll("'", "").trim();
+        String date1 = FunctionUtils.getStringValue(args[0], env).replaceAll("'", "").trim();
+        String date2 = FunctionUtils.getStringValue(args[1], env).replaceAll("'", "").trim();
         
         try {
             LocalDateTime time1 = LocalDateTime.parse(date1, FORMATTER);
@@ -38,7 +33,7 @@ public class SecondsFunction implements Function {
             long seconds = ChronoUnit.SECONDS.between(time2, time1);
             log.debug("计算秒数差: {} - {} = {} s", date1, date2, seconds);
             
-            return seconds;
+            return FunctionUtils.wrapReturn(seconds);
         } catch (Exception e) {
             throw new IllegalArgumentException("日期格式错误: " + e.getMessage());
         }

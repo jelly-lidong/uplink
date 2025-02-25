@@ -64,7 +64,7 @@ public class NodeComponent implements ProtocolComponent {
     String convert = node.getConvert();
     if (convert != null && !convert.isEmpty()) {
       if (node.getType() == NodeType.TIMESTAMP) {
-        node.setValue("‘" + value + "’"); // 保存原始值，用于后续计算
+        node.setValue("'" + value + "'"); // 保存原始值，用于后续计算
       }
       convert = convert.replace("x", node.getValue()).replace("X", node.getValue());
       value   = context.evaluateExpression(convert, getDependencyPaths(node, context));

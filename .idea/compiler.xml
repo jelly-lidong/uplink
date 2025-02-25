@@ -16,7 +16,6 @@
         <module name="common-model" />
         <module name="common-orbit" />
         <module name="common-utils" />
-        <module name="service-cmd-coder" />
         <module name="service-task-manager" />
       </profile>
     </annotationProcessing>

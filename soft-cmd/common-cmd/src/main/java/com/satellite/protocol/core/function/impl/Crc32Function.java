@@ -1,38 +1,31 @@
 package com.satellite.protocol.core.function.impl;
 
-import com.satellite.protocol.core.function.Function;
+import com.googlecode.aviator.runtime.function.AbstractVariadicFunction;
+import com.googlecode.aviator.runtime.function.FunctionUtils;
+import com.googlecode.aviator.runtime.type.AviatorObject;
 import com.satellite.protocol.core.context.ProtocolContext;
+import com.sun.org.apache.xerces.internal.impl.dv.util.HexBin;
 import lombok.extern.slf4j.Slf4j;
 import java.util.zip.CRC32;
+import java.util.Map;
 
 @Slf4j
-public class Crc32Function implements Function {
-    
+public class Crc32Function extends AbstractVariadicFunction {
     @Override
     public String getName() {
         return "crc32";
     }
 
-    
     @Override
-    public Object execute(String expression, ProtocolContext context) {
-        // 解析参数 - 获取需要计算CRC的组件路径
-        String path = expression.substring(6, expression.length() - 1).trim();
-        if (path.isEmpty()) {
-            throw new IllegalArgumentException("crc32函数需要一个参数");
-        }
-        
-        // 获取组件数据
-        byte[] data = context.getComponentBytes(path);
-        if (data == null || data.length == 0) {
-            throw new IllegalArgumentException("未找到组件数据: " + path);
-        }
-        
+    public AviatorObject variadicCall(Map<String, Object> env, AviatorObject... args) {
+        // 解析参数
+        String hex = FunctionUtils.getStringValue(args[0], env);
+        byte[] bytes = HexBin.decode(hex);
+
         // 计算CRC32
-        long crc = calculateCrc32(data);
-        log.debug("计算CRC32: {} -> 0x{}", path, Long.toHexString(crc));
-        
-        return crc;
+        long crc = calculateCrc32(bytes);
+
+        return FunctionUtils.wrapReturn(crc);
     }
     
     /**

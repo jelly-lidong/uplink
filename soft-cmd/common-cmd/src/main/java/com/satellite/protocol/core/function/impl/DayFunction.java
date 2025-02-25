@@ -1,6 +1,6 @@
 package com.satellite.protocol.core.function.impl;
 
-import com.googlecode.aviator.runtime.function.AbstractFunction;
+import com.googlecode.aviator.runtime.function.AbstractVariadicFunction;
 import com.googlecode.aviator.runtime.function.FunctionUtils;
 import com.googlecode.aviator.runtime.type.AviatorObject;
 import java.time.LocalDateTime;
@@ -10,7 +10,7 @@ import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class DayFunction extends AbstractFunction {
+public class DayFunction extends AbstractVariadicFunction {
     
     private static final DateTimeFormatter FORMATTER = 
         DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -21,7 +21,7 @@ public class DayFunction extends AbstractFunction {
     }
     
     @Override
-    public AviatorObject call(Map<String, Object> env, AviatorObject... args) {
+    public AviatorObject variadicCall(Map<String, Object> env, AviatorObject... args) {
         if (args.length != 2) {
             throw new IllegalArgumentException("day函数需要2个参数");
         }

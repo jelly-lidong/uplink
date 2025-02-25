@@ -66,7 +66,57 @@
 
 ## 2. 核心功能实现
 
-### 2.1 节点处理器链
+### 2.1 自定义方法
+
+#### 2.1.1 ChecksumFunction
+- **功能**：计算给定十六进制字符串的校验和。
+- **使用示例**：
+  ```java
+  String expression = "checksum('0xFFAA')";
+  Object result = FunctionRegistry.evaluate(expression, context);
+  ```
+
+#### 2.1.2 Crc16Function
+- **功能**：计算给定十六进制字符串的CRC16校验值。
+- **使用示例**：
+  ```java
+  String expression = "crc16('0xFFAA')";
+  Object result = FunctionRegistry.evaluate(expression, context);
+  ```
+
+#### 2.1.3 Crc32Function
+- **功能**：计算给定十六进制字符串的CRC32校验值。
+- **使用示例**：
+  ```java
+  String expression = "crc32('0xFFAA')";
+  Object result = FunctionRegistry.evaluate(expression, context);
+  ```
+
+#### 2.1.4 DayFunction
+- **功能**：计算两个日期之间的天数差。
+- **使用示例**：
+  ```java
+  String expression = "day('2020-01-02 12:00:01', '2020-01-01 00:00:00')";
+  Object result = FunctionRegistry.evaluate(expression, context);
+  ```
+
+#### 2.1.5 MilliSecondsFunction
+- **功能**：计算两个日期之间的毫秒差。
+- **使用示例**：
+  ```java
+  String expression = "millSeconds('2020-01-02 12:00:01', '2020-01-01 00:00:00')";
+  Object result = FunctionRegistry.evaluate(expression, context);
+  ```
+
+#### 2.1.6 SecondsFunction
+- **功能**：计算两个日期之间的秒数差。
+- **使用示例**：
+  ```java
+  String expression = "seconds('2020-01-02 12:00:01', '2020-01-01 00:00:00')";
+  Object result = FunctionRegistry.evaluate(expression, context);
+  ```
+
+### 2.2 节点处理器链
 采用责任链模式实现节点处理：
 ```java
 public abstract class AbstractNodeHandler {
@@ -78,7 +128,7 @@ public abstract class AbstractNodeHandler {
 }
 ```
 
-### 2.2 表达式处理
+### 2.3 表达式处理
 支持三种类型的表达式：
 
 1. 引用表达式：
@@ -92,7 +142,7 @@ public class ReferenceExpression implements Expression {
 
 2. 函数表达式：
 ```java
-// 格式：day(x - '2020-01-01') 或 crc16(${../body})
+// 格式：day('2020-01-02 12:00:01', '2020-01-01 00:00:00') 或 crc16('0xFF')
 public class FunctionExpression implements Expression {
     // 解析函数调用并计算结果
     public Object evaluate(Object value, ExpressionContext context);
@@ -108,7 +158,7 @@ public class SimpleExpression implements Expression {
 }
 ```
 
-### 2.3 依赖处理
+### 2.4 依赖处理
 处理节点间的依赖关系：
 ```java
 private static class DeferredNode {
@@ -128,7 +178,7 @@ private void processNode(Node node, ByteBuf buffer, boolean isEncode) {
 }
 ```
 
-### 2.4 校验处理
+### 2.5 校验处理
 校验节点通过函数表达式实现：
 ```java
 public abstract class AbstractCheckFunction implements Function {
