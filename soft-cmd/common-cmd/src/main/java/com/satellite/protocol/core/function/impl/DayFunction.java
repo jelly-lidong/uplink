@@ -34,7 +34,7 @@ public class DayFunction extends AbstractVariadicFunction {
             LocalDateTime time2 = LocalDateTime.parse(date2, FORMATTER);
             
             long days = ChronoUnit.DAYS.between(time2, time1);
-            log.debug("计算天数差: {} - {} = {} 天", date1, date2, days);
+            log.info("计算天数差: {} - {} = {} 天", date1, date2, days);
             
             return FunctionUtils.wrapReturn(days);
         } catch (Exception e) {

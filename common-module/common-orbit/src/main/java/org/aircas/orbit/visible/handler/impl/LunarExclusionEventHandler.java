@@ -1,88 +1,111 @@
 package org.aircas.orbit.visible.handler.impl;
 
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.aircas.orbit.model.TimeInterval;
 import org.aircas.orbit.visible.detector.LunarExclusionDetector;
-import org.aircas.orbit.visible.handler.EventDetectorHandler;
-import org.hipparchus.ode.events.Action;
+import org.aircas.orbit.visible.handler.AbstractEventDetectorHandler;
 import org.orekit.propagation.Propagator;
-import org.orekit.propagation.SpacecraftState;
 import org.orekit.propagation.events.AdaptableInterval;
-import org.orekit.time.AbsoluteDate;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.orekit.propagation.events.EventDetector;
 
 /**
  * 月球排除事件处理器
+ *
  * <p>
- * 该类用于计算目标是否在月球避让角范围内的可观测时间区间。
+ * 该类用于检测卫星观测目标时是否受到月球干扰。当卫星-目标连线与卫星-月球连线之间的夹角
+ * 大于设定阈值时，表示可以对目标进行观测。
+ * </p>
+ *
+ * <p>
+ * 主要功能:
+ * <ul>
+ * <li>检测卫星观测目标时的月球干扰</li>
+ * <li>计算卫星-目标-月球三者之间的角度关系</li>
+ * <li>生成目标可观测的时间区间</li>
+ * </ul>
+ * </p>
+ *
+ * <p>
+ * 使用场景:
+ * <ul>
+ * <li>光学成像任务规划</li>
+ * <li>空间目标监视跟踪</li>
+ * <li>月球干扰避让</li>
+ * </ul>
  * </p>
  */
 @Slf4j
-public class LunarExclusionEventHandler extends EventDetectorHandler {
+public class LunarExclusionEventHandler extends AbstractEventDetectorHandler {
 
-    private final double avoidanceAngle; // 月球避让角（弧度）
-    private final double threshold; // 阈值
-    private final int maxIter; // 最大迭代次数
-    private final double maxCheck; // 检查间隔（秒）
+    private final        double avoidanceAngle;  // 月球避让角（度）
+    private static final double DEFAULT_MIN_WINDOW_DURATION = 60.0; // 默认最短窗口时长（秒）
 
-    public LunarExclusionEventHandler(double avoidanceAngle, double maxCheck, double threshold,int maxIter) {
+    /**
+     * 构造函数
+     *
+     * @param avoidanceAngle 月球避让角（度）
+     * @param maxCheck 最大检查间隔（秒）
+     * @param threshold 检测阈值
+     * @param maxIter 最大迭代次数
+     */
+    public LunarExclusionEventHandler(
+        int maxIter,
+        double maxCheck,
+        double threshold,
+        double avoidanceAngle,
+        double minWindowDuration
+    ) {
+        super(maxCheck, threshold, maxIter, minWindowDuration);
+
+        if (avoidanceAngle <= 0 || avoidanceAngle >= 180) {
+            throw new IllegalArgumentException("月球避让角必须在(0, 180)度范围内");
+        }
+
         this.avoidanceAngle = avoidanceAngle;
-        this.threshold = threshold;
-        this.maxIter = maxIter;
-        this.maxCheck = maxCheck;
     }
 
     @Override
     public String getName() {
-        return "月光遮蔽角";
+        return "最小月光遮蔽角约束";
     }
 
     @Override
-    public List<TimeInterval> calculate(Propagator satellitePropagator, Propagator targetPropagator, List<TimeInterval> intervals) {
-        List<TimeInterval> timeIntervals = new ArrayList<>();
-        
-        for (TimeInterval interval : intervals) {
-            AbsoluteDate startDate = interval.getStartDate();
-            AbsoluteDate endDate = interval.getEndDate();
-
-            // 创建月球排除检测器
-            LunarExclusionDetector detector = new LunarExclusionDetector(
-                    targetPropagator,
-                    avoidanceAngle,
-                    AdaptableInterval.of(maxCheck),
-                    threshold,
-                    maxIter,
-                    (s, eventDetector, increasing) -> {
-                        if (increasing) {
-                            TimeInterval newInterval = new TimeInterval();
-                            newInterval.setStartDate(s.getDate());
-                            timeIntervals.add(newInterval);
-                        } else {
-                            TimeInterval lastInterval = timeIntervals.get(timeIntervals.size() - 1);
-                            lastInterval.setEndDate(s.getDate());
-                        }
-                        return Action.CONTINUE;
-                    });
-
-            SpacecraftState initialState = satellitePropagator.propagate(startDate);
-            if (detector.g(initialState) > 0 && (timeIntervals.isEmpty())) {
-                System.out.println("开始时间: " + startDate);
-                log.debug("初始状态符合条件: date:{}", initialState.getDate());
-                TimeInterval newInterval = new TimeInterval();
-                newInterval.setStartDate(startDate);
-                timeIntervals.add(newInterval);
-            }
-
-            satellitePropagator.addEventDetector(detector);
-
-            SpacecraftState finalState = satellitePropagator.propagate(startDate, endDate);
-            log.debug("最终状态: date:{}", finalState.getDate());
-            log.debug("最终状态符合条件: date:{}", finalState.getDate());
-            timeIntervals.get(timeIntervals.size() - 1).setEndDate(finalState.getDate());
-        }
-
-        return timeIntervals;
+    public String getExclusionInfo() {
+        return String.format("月球避让角: %.2f度", avoidanceAngle);
     }
-} 
+
+    /**
+     * 创建月球排除事件检测器
+     *
+     * @param targetPropagator 目标传播器
+     * @param timeIntervals 时间区间列表
+     * @return 事件检测器
+     */
+    @Override
+    protected EventDetector createDetector(Propagator targetPropagator,
+        List<TimeInterval> timeIntervals) {
+        return new LunarExclusionDetector(
+            targetPropagator,
+            avoidanceAngle,
+            maxIter,
+            AdaptableInterval.of(maxCheck),
+            threshold,
+            createDefaultHandler(timeIntervals)
+        );
+    }
+
+
+    @Override
+    public List<TimeInterval> calculate(Propagator satellitePropagator,
+        Propagator targetPropagator,
+        List<TimeInterval> intervals) {
+        // 先调用父类的计算方法
+        List<TimeInterval> calculatedIntervals = super.calculate(
+            satellitePropagator, targetPropagator, intervals);
+
+        // 过滤无效的时间窗口
+        return filterShortWindows(calculatedIntervals);
+    }
+
+}

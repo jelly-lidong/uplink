@@ -23,7 +23,7 @@ public class CheckComposite extends AbstractProtocolComponent {
     public CheckComposite(ProtocolCheck check, String parentPath) {
         super(parentPath + "/check", check.getLengthUnit());
         this.check = check;
-        log.debug("创建协议校验组件");
+        log.info("创建协议校验组件");
         initializeChildren();
     }
     
@@ -33,7 +33,7 @@ public class CheckComposite extends AbstractProtocolComponent {
      */
     private void initializeChildren() {
         if (check.getNodes() != null) {
-            log.debug("添加校验节点, 数量: {}", check.getNodes().size());
+            log.info("添加校验节点, 数量: {}", check.getNodes().size());
             check.getNodes().forEach(node -> 
                 addChild(new NodeComponent(node, componentPath)));
         }
@@ -41,19 +41,19 @@ public class CheckComposite extends AbstractProtocolComponent {
     
     @Override
     public void encode(ByteBuf buffer, ProtocolContext context) throws ProtocolException {
-        log.debug("开始编码协议校验");
+        log.info("开始编码协议校验");
         for (ProtocolComponent child : children) {
             child.encode(buffer, context);
         }
-        log.debug("完成协议校验编码");
+        log.info("完成协议校验编码");
     }
     
     @Override
     public void decode(ByteBuf buffer, ProtocolContext context) throws ProtocolException {
-        log.debug("开始解码协议校验");
+        log.info("开始解码协议校验");
         for (ProtocolComponent child : children) {
             child.decode(buffer, context);
         }
-        log.debug("完成协议校验解码");
+        log.info("完成协议校验解码");
     }
 } 

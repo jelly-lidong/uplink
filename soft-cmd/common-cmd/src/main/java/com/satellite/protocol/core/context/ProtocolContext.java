@@ -72,7 +72,7 @@ public class ProtocolContext {
      * @param value 值
      */
     public void putNodeValue(String path, Object value) {
-        log.debug("存储节点值, 路径: {}, 值: {}", path, value);
+        log.info("存储节点值, 路径: {}, 值: {}", path, value);
         nodeValues.put(path, value);
         processPendingNodes(path);
     }
@@ -85,7 +85,7 @@ public class ProtocolContext {
      */
     public Object getNodeValue(String path) {
         Object value = nodeValues.get(path);
-        log.debug("获取节点值, 路径: {}, 值: {}", path, value);
+        log.info("获取节点值, 路径: {}, 值: {}", path, value);
         return value;
     }
 
@@ -97,7 +97,7 @@ public class ProtocolContext {
      */
     public void addPendingNode(Node node, String... dependencyKeys) {
         String nodeKey = generateNodeKey(node);
-        log.debug("添加待处理节点: {}, 依赖节点: {}", nodeKey, String.join(",", dependencyKeys));
+        log.info("添加待处理节点: {}, 依赖节点: {}", nodeKey, String.join(",", dependencyKeys));
         pendingNodes.put(nodeKey, new DependentNode(node, dependencyKeys));
     }
 
@@ -110,7 +110,7 @@ public class ProtocolContext {
         pendingNodes.entrySet().removeIf(entry -> {
             DependentNode dependentNode = entry.getValue();
             if (dependentNode.isDependencySatisfied(this)) {
-                log.debug("处理待处理节点: {}", entry.getKey());
+                log.info("处理待处理节点: {}", entry.getKey());
                 try {
                     // 计算并更新节点值
                     processNode(dependentNode);
@@ -143,14 +143,14 @@ public class ProtocolContext {
         String nodePath = generateNodeKey(node);
         putNodeValue(nodePath, value);
 
-        log.debug("更新节点值: {}, 值: {}", nodePath, value);
+        log.info("更新节点值: {}, 值: {}", nodePath, value);
     }
 
     /**
      * 计算表达式
      */
     public Object evaluateExpression(String expression, String[] dependencyKeys) {
-        log.debug("计算表达式: {}, 依赖节点: {}", expression, String.join(",", dependencyKeys));
+        log.info("计算表达式: {}, 依赖节点: {}", expression, String.join(",", dependencyKeys));
 
         try {
             // 直接将表达式传递给 FunctionRegistry 处理
@@ -158,7 +158,7 @@ public class ProtocolContext {
             // 替换表达式中的节点引用
             String evaluatedExpression = replaceNodeReferences(expression, context);
             Object result = FunctionRegistry.evaluate(evaluatedExpression, context);
-            log.debug("计算表达式结果: {} = {}", expression, result);
+            log.info("计算表达式结果: {} = {}", expression, result);
             return result;
         } catch (Exception e) {
             log.error("表达式计算失败: {}", expression, e);
@@ -286,7 +286,7 @@ public class ProtocolContext {
      * @return 完整路径
      */
     public String resolveNodePath(String currentPath, String targetPath) {
-        log.debug("解析节点路径, 当前路径: {}, 目标路径: {}", currentPath, targetPath);
+        log.info("解析节点路径, 当前路径: {}, 目标路径: {}", currentPath, targetPath);
 
         // 处理绝对路径
         if (targetPath.startsWith("/")) {
@@ -328,7 +328,7 @@ public class ProtocolContext {
         }
 
         String resolvedPath = resultPath.length() == 0 ? "/" : resultPath.toString();
-        log.debug("解析后的路径: {}", resolvedPath);
+        log.info("解析后的路径: {}", resolvedPath);
         return resolvedPath;
     }
 
@@ -370,7 +370,7 @@ public class ProtocolContext {
      */
     public void recordComponentRange(String componentPath, int startIndex, int length, LengthUnit unit) {
         componentRanges.put(componentPath, new ByteRange(startIndex, length, unit));
-        log.debug("记录组件数据范围: {}, 起始位置: {}, 长度: {} {}",
+        log.info("记录组件数据范围: {}, 起始位置: {}, 长度: {} {}",
                 componentPath, startIndex, length, unit);
     }
 
@@ -396,7 +396,7 @@ public class ProtocolContext {
      */
     public void setCurrentPath(String path) {
         this.currentPath = path;
-        log.debug("设置当前处理路径: {}", path);
+        log.info("设置当前处理路径: {}", path);
     }
 
     /**

@@ -1,11 +1,10 @@
 package org.aircas.orbit.visible.handler;
 
-import lombok.Getter;
-import org.orekit.propagation.Propagator;
-import org.aircas.orbit.model.TimeInterval;
-
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
+import org.aircas.orbit.model.TimeInterval;
+import org.orekit.propagation.Propagator;
 
 /**
  * 事件检测器链节点基类
@@ -54,6 +53,8 @@ public abstract class EventDetectorHandler {
 
 
     public abstract String getName();
+
+    public abstract String getExclusionInfo();
 
     /**
      * 处理事件检测

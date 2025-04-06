@@ -35,7 +35,7 @@ public class MilliSecondsFunction extends AbstractVariadicFunction {
             long millis2 = time2.toInstant(ZoneOffset.of("+8")).toEpochMilli();
             long diff = millis1 - millis2;
             
-            log.debug("计算毫秒差: {} - {} = {} ms", date1, date2, diff);
+            log.info("计算毫秒差: {} - {} = {} ms", date1, date2, diff);
             
             return FunctionUtils.wrapReturn(diff);
         } catch (Exception e) {

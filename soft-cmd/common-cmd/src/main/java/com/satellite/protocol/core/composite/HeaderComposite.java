@@ -31,7 +31,7 @@ public class HeaderComposite extends AbstractProtocolComponent {
      */
     private void initializeChildren() {
         if (header.getNodes() != null) {
-            log.debug("添加协议头节点, 数量: {}", header.getNodes().size());
+            log.info("添加协议头节点, 数量: {}", header.getNodes().size());
             header.getNodes().forEach(node -> 
                 addChild(new NodeComponent(node, componentPath)));
         }
@@ -39,19 +39,19 @@ public class HeaderComposite extends AbstractProtocolComponent {
     
     @Override
     public void encode(ByteBuf buffer, ProtocolContext context) throws ProtocolException {
-        log.debug("开始编码协议头");
+        log.info("开始编码协议头");
         for (ProtocolComponent child : children) {
             child.encode(buffer, context);
         }
-        log.debug("完成协议头编码");
+        log.info("完成协议头编码");
     }
     
     @Override
     public void decode(ByteBuf buffer, ProtocolContext context) throws ProtocolException {
-        log.debug("开始解码协议头");
+        log.info("开始解码协议头");
         for (ProtocolComponent child : children) {
             child.decode(buffer, context);
         }
-        log.debug("完成协议头解码");
+        log.info("完成协议头解码");
     }
 } 

@@ -26,7 +26,7 @@ public class FunctionRegistry {
      * 评估表达式并返回结果
      */
     public static Object evaluate(String evaluatedExpression, FunctionContext context) {
-        log.debug("开始计算表达式: {}", evaluatedExpression);
+        log.info("开始计算表达式: {}", evaluatedExpression);
         return AviatorEvaluator.execute(evaluatedExpression);
     }
 

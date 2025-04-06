@@ -50,7 +50,7 @@ public abstract class AbstractProtocolComponent implements ProtocolComponent {
         // 设置当前路径
         context.setCurrentPath(componentPath);
         
-        log.debug("开始编码组件: {}", componentPath);
+        log.info("开始编码组件: {}", componentPath);
         int startIndex = buffer.writerIndex();
         
         // 编码所有子组件
@@ -67,7 +67,7 @@ public abstract class AbstractProtocolComponent implements ProtocolComponent {
         buffer.getBytes(startIndex, data);
         context.putNodeValue(componentPath, data);
         
-        log.debug("完成组件编码: {}, 长度: {} {}", componentPath, length, lengthUnit.name());
+        log.info("完成组件编码: {}, 长度: {} {}", componentPath, length, lengthUnit.name());
         
         // 恢复原来的路径
         context.setCurrentPath(previousPath);

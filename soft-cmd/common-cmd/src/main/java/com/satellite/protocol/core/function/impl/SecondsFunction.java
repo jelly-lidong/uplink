@@ -31,7 +31,7 @@ public class SecondsFunction extends AbstractVariadicFunction {
             
             // 计算秒数差
             long seconds = ChronoUnit.SECONDS.between(time2, time1);
-            log.debug("计算秒数差: {} - {} = {} s", date1, date2, seconds);
+            log.info("计算秒数差: {} - {} = {} s", date1, date2, seconds);
             
             return FunctionUtils.wrapReturn(seconds);
         } catch (Exception e) {

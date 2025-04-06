@@ -44,7 +44,7 @@ public class FunctionExpression implements Expression {
             this.adjustment = 0;
         }
         
-        log.debug("解析函数表达式: {} -> 函数名: {}, 参数: {}, 调整值: {}", 
+        log.info("解析函数表达式: {} -> 函数名: {}, 参数: {}, 调整值: {}", 
             expression, functionName, args, adjustment);
     }
     

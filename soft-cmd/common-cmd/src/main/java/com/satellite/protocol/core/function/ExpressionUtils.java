@@ -51,7 +51,7 @@ public class ExpressionUtils {
             paramList.add(current.toString().trim());
         }
         
-        log.debug("解析函数参数: {} -> {}", expression, paramList);
+        log.info("解析函数参数: {} -> {}", expression, paramList);
         return paramList.toArray(new String[0]);
     }
     

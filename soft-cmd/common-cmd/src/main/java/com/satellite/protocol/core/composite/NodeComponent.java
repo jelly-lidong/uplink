@@ -39,19 +39,19 @@ public class NodeComponent implements ProtocolComponent {
     this.node           = node;
     this.handlerFactory = NodeHandlerFactory.getInstance();
     this.nodePath       = parentPath + "/" + node.getName();
-    log.debug("创建节点组件: {}, 路径: {}", node.getName(), nodePath);
+    log.info("创建节点组件: {}, 路径: {}", node.getName(), nodePath);
   }
 
   @Override
   public void encode(ByteBuf buffer, ProtocolContext context) throws ProtocolException {
-    log.debug("开始编码节点: {}, 类型: {}, 路径: {}",
+    log.info("开始编码节点: {}, 类型: {}, 路径: {}",
         node.getName(), node.getType(), nodePath);
 
     // 检查是否有依赖
     if (hasDependencies(node)) {
       if (areDependenciesSatisfied(node, context)) {
         context.addPendingNode(node, getDependencyPaths(node, context));
-        log.debug("节点 {} 依赖未满足，加入待处理队列", nodePath);
+        log.info("节点 {} 依赖未满足，加入待处理队列", nodePath);
         return;
       }
     }
@@ -68,7 +68,7 @@ public class NodeComponent implements ProtocolComponent {
       }
       convert = convert.replace("x", node.getValue()).replace("X", node.getValue());
       value   = context.evaluateExpression(convert, getDependencyPaths(node, context));
-      log.debug("转换表达式计算结果: {} -> {}", convert, value);
+      log.info("转换表达式计算结果: {} -> {}", convert, value);
     }
 
     // 转换值类型并编码
@@ -81,7 +81,7 @@ public class NodeComponent implements ProtocolComponent {
     // 将节点值存入上下文
     if (value != null) {
       context.putNodeValue(nodePath, value);
-      log.debug("完成节点编码: {}, 值: {}", nodePath, value);
+      log.info("完成节点编码: {}, 值: {}", nodePath, value);
     } else {
       log.warn("节点 {} 的值为null，跳过存储", nodePath);
     }
@@ -158,7 +158,7 @@ public class NodeComponent implements ProtocolComponent {
                 .map(enumValue -> {
                   String enumStrValue = enumValue.getValue();
                   int    enumIntValue = parseEnumValue(enumStrValue);
-                  log.debug("枚举值转换: {} -> {} ({})",
+                  log.info("枚举值转换: {} -> {} ({})",
                       strValue, enumStrValue, enumIntValue);
                   return enumIntValue;
                 })
@@ -209,7 +209,7 @@ public class NodeComponent implements ProtocolComponent {
             LocalDateTime     dateTime  = LocalDateTime.parse(timestampStr, formatter);
             // 转换为Unix时间戳（毫秒）
             long timestamp = dateTime.toInstant(ZoneOffset.of("+8")).toEpochMilli();
-            log.debug("时间戳转换: {} -> {} (使用格式: {})",
+            log.info("时间戳转换: {} -> {} (使用格式: {})",
                 timestampStr, timestamp, pattern);
             return timestamp;
           } catch (DateTimeParseException ignored) {
@@ -230,7 +230,7 @@ public class NodeComponent implements ProtocolComponent {
 
   @Override
   public void decode(ByteBuf buffer, ProtocolContext context) throws ProtocolException {
-    log.debug("开始解码节点: {}, 类型: {}, 路径: {}",
+    log.info("开始解码节点: {}, 类型: {}, 路径: {}",
         node.getName(), node.getType(), nodePath);
 
     // 检查是否有依赖
@@ -238,7 +238,7 @@ public class NodeComponent implements ProtocolComponent {
       // 如果有依赖且依赖未满足，则加入待处理队列
       if (areDependenciesSatisfied(node, context)) {
         context.addPendingNode(node, getDependencyPaths(node, context));
-        log.debug("节点 {} 依赖未满足，加入待处理队列", nodePath);
+        log.info("节点 {} 依赖未满足，加入待处理队列", nodePath);
         return;
       }
     }
@@ -252,7 +252,7 @@ public class NodeComponent implements ProtocolComponent {
 
     // 将节点值存入上下文
     context.putNodeValue(nodePath, value);
-    log.debug("完成节点解码: {}, 值: {}", nodePath, value);
+    log.info("完成节点解码: {}, 值: {}", nodePath, value);
   }
 
   /**
@@ -301,10 +301,10 @@ public class NodeComponent implements ProtocolComponent {
         throw new IllegalArgumentException("节点引用路径不能为空");
       }
       nodeRefs.add(nodePath);
-      log.debug("找到节点引用路径: {}", nodePath);
+      log.info("找到节点引用路径: {}", nodePath);
     }
 
-    log.debug("解析节点引用: {} -> {}", refValue, nodeRefs);
+    log.info("解析节点引用: {} -> {}", refValue, nodeRefs);
     return nodeRefs.toArray(new String[0]);
   }
 

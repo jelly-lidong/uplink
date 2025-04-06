@@ -14,6 +14,6 @@ public class ApplicationStopped implements ApplicationListener<ContextStoppedEve
 
   @Override
   public void onApplicationEvent(ContextStoppedEvent contextStoppedEvent) {
-    log.debug("application stopped...");
+    log.info("application stopped...");
   }
 }

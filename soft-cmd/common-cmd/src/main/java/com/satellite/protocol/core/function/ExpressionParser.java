@@ -97,7 +97,7 @@ public class ExpressionParser {
             tokens.add(current.toString());
         }
         
-        log.debug("解析表达式: {} -> {}", expression, tokens);
+        log.info("解析表达式: {} -> {}", expression, tokens);
         return tokens;
     }
 

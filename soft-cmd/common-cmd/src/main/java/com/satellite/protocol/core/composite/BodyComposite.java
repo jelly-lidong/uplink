@@ -24,7 +24,7 @@ public class BodyComposite extends AbstractProtocolComponent {
   public BodyComposite(ProtocolBody body, String parentPath) {
     super(parentPath + "/body", body.getLengthUnit());
     this.body = body;
-    log.debug("创建协议体组件");
+    log.info("创建协议体组件");
     initializeChildren();
   }
 
@@ -35,40 +35,40 @@ public class BodyComposite extends AbstractProtocolComponent {
   private void initializeChildren() {
     // 处理子协议头
     if (body.getHeader() != null) {
-      log.debug("添加协议体子头部组件");
+      log.info("添加协议体子头部组件");
       addChild(new HeaderComposite(body.getHeader(), componentPath));
     }
 
     // 处理节点
     if (body.getNodes() != null) {
-      log.debug("添加协议体节点, 数量: {}", body.getNodes().size());
+      log.info("添加协议体节点, 数量: {}", body.getNodes().size());
       body.getNodes().forEach(node ->
           addChild(new NodeComponent(node, componentPath)));
     }
 
     // 处理节点组
     if (body.getNodeGroups() != null) {
-      log.debug("添加协议体节点组, 数量: {}", body.getNodeGroups().size());
+      log.info("添加协议体节点组, 数量: {}", body.getNodeGroups().size());
       body.getNodeGroups().forEach(group ->
           addChild(new NodeGroupComponent(group, componentPath)));
     }
 
     // 处理子协议体
     if (body.getSubBody() != null) {
-      log.debug("添加子协议体组件");
+      log.info("添加子协议体组件");
       addChild(new BodyComposite(body.getSubBody(), componentPath));
     }
 
     // 处理校验
     if (body.getCheck() != null) {
-      log.debug("添加协议体校验组件");
+      log.info("添加协议体校验组件");
       addChild(new CheckComposite(body.getCheck(), componentPath));
     }
   }
 
   @Override
   public void encode(ByteBuf buffer, ProtocolContext context) throws ProtocolException {
-    log.debug("开始编码协议体");
+    log.info("开始编码协议体");
     int startIndex = buffer.writerIndex();
     
     for (ProtocolComponent child : children) {
@@ -77,15 +77,15 @@ public class BodyComposite extends AbstractProtocolComponent {
     
     int length = buffer.writerIndex() - startIndex;
     context.recordComponentRange(componentPath, startIndex, length, lengthUnit);
-    log.debug("完成协议体编码, 长度: {}", length);
+    log.info("完成协议体编码, 长度: {}", length);
   }
 
   @Override
   public void decode(ByteBuf buffer, ProtocolContext context) throws ProtocolException {
-    log.debug("开始解码协议体");
+    log.info("开始解码协议体");
     for (ProtocolComponent child : children) {
       child.decode(buffer, context);
     }
-    log.debug("完成协议体解码");
+    log.info("完成协议体解码");
   }
 } 

@@ -23,7 +23,7 @@ public class ProtocolComposite extends AbstractProtocolComponent {
   public ProtocolComposite(Protocol protocol) {
     super("/protocol/" + protocol.getName(), protocol.getLengthUnit());
     this.protocol = protocol;
-    log.debug("创建协议组件: {}", protocol.getName());
+    log.info("创建协议组件: {}", protocol.getName());
     initializeChildren();
   }
 
@@ -33,15 +33,15 @@ public class ProtocolComposite extends AbstractProtocolComponent {
    */
   private void initializeChildren() {
     if (protocol.getHeader() != null) {
-      log.debug("添加协议头组件");
+      log.info("添加协议头组件");
       addChild(new HeaderComposite(protocol.getHeader(), componentPath));
     }
     if (protocol.getBody() != null) {
-      log.debug("添加协议体组件");
+      log.info("添加协议体组件");
       addChild(new BodyComposite(protocol.getBody(), componentPath));
     }
     if (protocol.getCheck() != null) {
-      log.debug("添加协议校验组件");
+      log.info("添加协议校验组件");
       addChild(new CheckComposite(protocol.getCheck(), componentPath));
     }
   }

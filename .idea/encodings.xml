@@ -3,6 +3,7 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/common-module/common-model/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/common-module/common-orbit/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/common-module/common-orbit/src/main/java/org/aircas/orbit/visible/ConstraintManager.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/common-module/common-utils/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/common-module/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/common-module/src/main/resources" charset="UTF-8" />
