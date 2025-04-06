@@ -1,5 +1,6 @@
 package org.aircas.orbit.visible.handler.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.hipparchus.ode.events.Action;
 import org.orekit.propagation.Propagator;
 import org.orekit.propagation.SpacecraftState;
@@ -19,6 +20,7 @@ import java.util.List;
  * 该类用于计算目标与卫星之间的距离是否在设定范围内的可观测时间区间。
  * </p>
  */
+@Slf4j
 public class DistanceExclusionEventHandler extends EventDetectorHandler {
 
     private final double minDistance; // 最小距离
@@ -49,35 +51,34 @@ public class DistanceExclusionEventHandler extends EventDetectorHandler {
             AbsoluteDate endDate = interval.getEndDate();
 
             // 创建距离排除事件检测器
-            DistanceExclusionDetector distanceDetector = new DistanceExclusionDetector(targetPropagator, minDistance, maxDistance,
-                    AdaptableInterval.of(maxCheck), threshold, maxIter, (s, detector, increasing) -> {
+            DistanceExclusionDetector detector = new DistanceExclusionDetector(targetPropagator, minDistance, maxDistance,
+                    AdaptableInterval.of(maxCheck), threshold, maxIter, (s, eventDetector, increasing) -> {
                 if (increasing) {
-                    System.out.println("目标与卫星的距离在范围内开始时间: " + s.getDate());
+                    TimeInterval newInterval = new TimeInterval();
+                    newInterval.setStartDate(s.getDate());
+                    timeIntervals.add(newInterval);
                 } else {
-                    System.out.println("目标与卫星的距离在范围内结束时间: " + s.getDate());
+                    TimeInterval lastInterval = timeIntervals.get(timeIntervals.size() - 1);
+                    lastInterval.setEndDate(s.getDate());
                 }
                 return Action.CONTINUE;
             });
 
-            // 将事件检测器添加到传播器
-            satellitePropagator.addEventDetector(distanceDetector);
-
-            // 检查初始状态
             SpacecraftState initialState = satellitePropagator.propagate(startDate);
-            if (distanceDetector.g(initialState) == 0) {
+            if (detector.g(initialState) > 0 && (timeIntervals.isEmpty())) {
+                System.out.println("开始时间: " + startDate);
+                log.debug("初始状态符合条件: date:{}", initialState.getDate());
                 TimeInterval newInterval = new TimeInterval();
                 newInterval.setStartDate(startDate);
                 timeIntervals.add(newInterval);
             }
 
-            // 传播轨道
-            SpacecraftState finalState = satellitePropagator.propagate(startDate, endDate);
+            satellitePropagator.addEventDetector(detector);
 
-            // 检查结束状态
-            if (distanceDetector.g(finalState) == 0) {
-                TimeInterval lastInterval = timeIntervals.get(timeIntervals.size() - 1);
-                lastInterval.setEndDate(endDate);
-            }
+            SpacecraftState finalState = satellitePropagator.propagate(startDate, endDate);
+            log.debug("最终状态: date:{}", finalState.getDate());
+            log.debug("最终状态符合条件: date:{}", finalState.getDate());
+            timeIntervals.get(timeIntervals.size() - 1).setEndDate(finalState.getDate());
         }
 
         return timeIntervals;

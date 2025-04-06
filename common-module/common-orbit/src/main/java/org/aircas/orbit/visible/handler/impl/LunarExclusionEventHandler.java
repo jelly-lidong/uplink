@@ -1,5 +1,6 @@
 package org.aircas.orbit.visible.handler.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.aircas.orbit.model.TimeInterval;
 import org.aircas.orbit.visible.detector.LunarExclusionDetector;
 import org.aircas.orbit.visible.handler.EventDetectorHandler;
@@ -18,6 +19,7 @@ import java.util.List;
  * 该类用于计算目标是否在月球避让角范围内的可观测时间区间。
  * </p>
  */
+@Slf4j
 public class LunarExclusionEventHandler extends EventDetectorHandler {
 
     private final double avoidanceAngle; // 月球避让角（弧度）
@@ -46,49 +48,39 @@ public class LunarExclusionEventHandler extends EventDetectorHandler {
             AbsoluteDate endDate = interval.getEndDate();
 
             // 创建月球排除检测器
-            LunarExclusionDetector lunarDetector = new LunarExclusionDetector(
+            LunarExclusionDetector detector = new LunarExclusionDetector(
                     targetPropagator,
                     avoidanceAngle,
                     AdaptableInterval.of(maxCheck),
                     threshold,
                     maxIter,
-                    (s, detector, increasing) -> {
+                    (s, eventDetector, increasing) -> {
                         if (increasing) {
-                            // 目标离开月球避让区，开始可见
                             TimeInterval newInterval = new TimeInterval();
                             newInterval.setStartDate(s.getDate());
                             timeIntervals.add(newInterval);
                         } else {
-                            // 目标进入月球避让区，结束可见
-                            if (!timeIntervals.isEmpty()) {
-                                TimeInterval lastInterval = timeIntervals.get(timeIntervals.size() - 1);
-                                lastInterval.setEndDate(s.getDate());
-                            }
+                            TimeInterval lastInterval = timeIntervals.get(timeIntervals.size() - 1);
+                            lastInterval.setEndDate(s.getDate());
                         }
                         return Action.CONTINUE;
                     });
 
-            // 将检测器添加到传播器
-            satellitePropagator.addEventDetector(lunarDetector);
-
-            // 检查初始状态
             SpacecraftState initialState = satellitePropagator.propagate(startDate);
-
-
-
-            // 传播轨道
-            SpacecraftState finalState = satellitePropagator.propagate(startDate, endDate);
-
-            // 检查结束状态
-            if (lunarDetector.g(finalState) > 0) {
-                // 结束状态不在月球避让区内
-                if (!timeIntervals.isEmpty()) {
-                    TimeInterval lastInterval = timeIntervals.get(timeIntervals.size() - 1);
-                    if (lastInterval.getEndDate() == null) {
-                        lastInterval.setEndDate(endDate);
-                    }
-                }
+            if (detector.g(initialState) > 0 && (timeIntervals.isEmpty())) {
+                System.out.println("开始时间: " + startDate);
+                log.debug("初始状态符合条件: date:{}", initialState.getDate());
+                TimeInterval newInterval = new TimeInterval();
+                newInterval.setStartDate(startDate);
+                timeIntervals.add(newInterval);
             }
+
+            satellitePropagator.addEventDetector(detector);
+
+            SpacecraftState finalState = satellitePropagator.propagate(startDate, endDate);
+            log.debug("最终状态: date:{}", finalState.getDate());
+            log.debug("最终状态符合条件: date:{}", finalState.getDate());
+            timeIntervals.get(timeIntervals.size() - 1).setEndDate(finalState.getDate());
         }
 
         return timeIntervals;

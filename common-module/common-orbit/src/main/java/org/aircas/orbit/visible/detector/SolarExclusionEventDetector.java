@@ -1,5 +1,7 @@
 package org.aircas.orbit.visible.detector;
 
+import java.util.Date;
+import org.aircas.orbit.MainApp;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.hipparchus.ode.events.Action;
 import org.orekit.bodies.CelestialBodyFactory;
@@ -22,6 +24,7 @@ import org.orekit.propagation.events.EventDetectionSettings;
 import org.orekit.propagation.events.EventDetector;
 import org.orekit.propagation.events.handlers.EventHandler;
 import org.orekit.time.AbsoluteDate;
+import org.orekit.time.TimeScale;
 import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
 
@@ -114,14 +117,14 @@ public class SolarExclusionEventDetector extends AbstractDetector<SolarExclusion
      */
     @Override
     public double g(SpacecraftState s) {
-        Vector3D sunPosition = CelestialBodyFactory.getSun().getPVCoordinates(s.getDate(), inertialFrame).getPosition();
+        AbsoluteDate date          = s.getDate();
+        Vector3D sunPosition = CelestialBodyFactory.getSun().getPVCoordinates(date, inertialFrame).getPosition();
         Vector3D satellitePosition = s.getPVCoordinates().getPosition();
-        Vector3D targetPosition = targetPropagator.propagate(s.getDate()).getPVCoordinates(inertialFrame).getPosition();
+        Vector3D targetPosition = targetPropagator.propagate(date).getPVCoordinates(inertialFrame).getPosition();
 
         Vector3D satelliteToSun = sunPosition.subtract(satellitePosition);
         Vector3D satelliteToTarget = targetPosition.subtract(satellitePosition);
         double angle = Vector3D.angle(satelliteToSun, satelliteToTarget);
-        //System.out.println("太阳遮蔽角: " + Math.toDegrees(angle));
         return angle - Math.toRadians(thresholdAngle);
     }
 

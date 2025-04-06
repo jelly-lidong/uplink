@@ -1,5 +1,6 @@
 package org.aircas.orbit.visible.handler.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.hipparchus.ode.events.Action;
 import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.frames.FramesFactory;
@@ -51,6 +52,7 @@ import java.util.List;
  * </ul>
  * </p>
  */
+@Slf4j
 public class EarthAtmosphereExclusionEventHandler extends EventDetectorHandler {
     private final int maxIter;
     private final double maxCheck; // 每分钟检查一次
@@ -78,42 +80,35 @@ public class EarthAtmosphereExclusionEventHandler extends EventDetectorHandler {
                     Constants.WGS84_EARTH_FLATTENING,
                     FramesFactory.getITRF(IERSConventions.IERS_2010, true));
 
-            final TimeInterval[] newInterval = new TimeInterval[1];
             EarthAtmosphereExclusionDetector detector = new EarthAtmosphereExclusionDetector(FramesFactory.getEME2000(),
                     targetPropagator, earth, AdaptableInterval.of(maxCheck), threshold, maxIter, (s, detector1, increasing) -> {
+                log.debug("检测到地球大气层排除事件: {},date:{}", increasing ? "开始" : "结束", s.getDate());
                 if (increasing) {
-                    newInterval[0] = new TimeInterval();
-                    newInterval[0].setStartDate(s.getDate());
-                    System.out.println("目标不在地球和大气层背景中开始时间: " + s.getDate());
+                    TimeInterval newInterval = new TimeInterval();
+                    newInterval.setStartDate(s.getDate());
+                    timeIntervals.add(newInterval);
                 } else {
-                    newInterval[0].setEndDate(s.getDate());
-                    if (newInterval[0].getStartDate() != null && newInterval[0].getEndDate() != null) {
-                        timeIntervals.add(newInterval[0]);
-                    }
-                    System.out.println("目标不在地球和大气层背景中结束时间: " + s.getDate());
+                    TimeInterval lastInterval = timeIntervals.get(timeIntervals.size() - 1);
+                    lastInterval.setEndDate(s.getDate());
                 }
                 return Action.CONTINUE;
             });
-            System.out.println("偏心率: " + satellitePropagator.getInitialState().getOrbit().getE());
 
-            // 将事件检测器添加到传播器
+            SpacecraftState initialState = satellitePropagator.propagate(startDate);
+            if (detector.g(initialState) > 0 && (timeIntervals.isEmpty())) {
+                System.out.println("开始时间: " + startDate);
+                log.debug("初始状态符合条件: date:{}", initialState.getDate());
+                TimeInterval newInterval = new TimeInterval();
+                newInterval.setStartDate(startDate);
+                timeIntervals.add(newInterval);
+            }
+
             satellitePropagator.addEventDetector(detector);
 
-            // 检查初始状态
-            SpacecraftState initialState = satellitePropagator.propagate(startDate);
-            if (detector.g(initialState) > 0) {
-                newInterval[0] = new TimeInterval();
-                newInterval[0].setStartDate(startDate);
-            }
-
-            // 传播轨道
             SpacecraftState finalState = satellitePropagator.propagate(startDate, endDate);
-
-            // 检查结束状态
-            if (newInterval[0] != null && newInterval[0].getStartDate() != null && newInterval[0].getEndDate() == null && detector.g(finalState) > 0) {
-                newInterval[0].setEndDate(endDate);
-                timeIntervals.add(newInterval[0]);
-            }
+            log.debug("最终状态: date:{}", finalState.getDate());
+            log.debug("最终状态符合条件: date:{}", finalState.getDate());
+            timeIntervals.get(timeIntervals.size() - 1).setEndDate(finalState.getDate());
         }
 
         return timeIntervals;

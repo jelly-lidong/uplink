@@ -1,7 +1,12 @@
 package org.aircas.orbit;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import org.aircas.orbit.visible.handler.impl.LunarExclusionEventHandler;
 import org.orekit.files.ccsds.ndm.odm.KeplerianElements;
 import org.orekit.orbits.PositionAngleType;
+import org.orekit.propagation.EphemerisGenerator;
 import org.orekit.propagation.analytical.tle.TLE;
 import org.orekit.propagation.analytical.tle.TLEPropagator;
 import org.orekit.propagation.numerical.NumericalPropagator;
@@ -52,6 +57,7 @@ public class MainApp {
 
     }
 
+
     private static void extracted() {
         // 定义轨道参数
         NumericalPropagator numericalPropagator = getNumericalPropagator();
@@ -62,29 +68,37 @@ public class MainApp {
         TLE targetTLE = new TLE(line1, line2);
         TLEPropagator targetPropagator = TLEPropagator.selectExtrapolator(targetTLE);
 
+//        EventDetectorHandler.add(new SolarExclusionEventHandler(5.,60,100,1,0.001));
+//        EventDetectorHandler.add(new LunarExclusionEventHandler(5.,1,0.001,100));
         EventDetectorHandler.add(new EarthAtmosphereExclusionEventHandler(100,1.,0.001));
-        EventDetectorHandler.add(new SolarExclusionEventHandler(5.,100,1,0.001));
 
         List<TimeInterval> timeIntervalList = new ArrayList<>();
-        AbsoluteDate startDate = new AbsoluteDate(2023, 10, 1, 0, 0, 0.0, TimeScalesFactory.getUTC());
-        AbsoluteDate endDate = startDate.shiftedBy(86400 * 30); // 传播一天
+        AbsoluteDate startDate = new AbsoluteDate(2025, 4, 6, 0, 0, 0.0, TimeScalesFactory.getUTC());
+        AbsoluteDate endDate = startDate.shiftedBy(86400 * 2); // 传播一天
         timeIntervalList.add(new TimeInterval(startDate, endDate));
         EventDetectorHandler.getEVENT_DETECTOR_HANDLERS().forEach(eventDetectorCalculator -> {
             List<TimeInterval> result = eventDetectorCalculator.calculate(numericalPropagator, targetPropagator, timeIntervalList);
             timeIntervalList.clear();
             timeIntervalList.addAll(result);
         });
+
+        System.out.println("有效时间段: ");
+        for (TimeInterval interval : timeIntervalList) {
+            System.out.println(interval.getStartDate()    + " 到 " + interval.getEndDate());
+        }
     }
+
+
 
     private static NumericalPropagator getNumericalPropagator() {
         KeplerianElements keplerianElements = new KeplerianElements();
-        keplerianElements.setA(7000e3);
-        keplerianElements.setE(0.);
-        keplerianElements.setI(Math.toRadians(98.7));
-        keplerianElements.setPa(Math.toRadians(0));
-        keplerianElements.setRaan(Math.toRadians(0));
-        keplerianElements.setMeanMotion(Math.toRadians(0));
-        keplerianElements.setEpoch(new AbsoluteDate(2023, 10, 1, 0, 0, 0.0, TimeScalesFactory.getUTC()));
+        keplerianElements.setA(6945045.1);
+        keplerianElements.setE(0.0014876690693199635);
+        keplerianElements.setI(Math.toRadians(97.72345918416977));
+        keplerianElements.setPa(Math.toRadians(96.93742203712463));
+        keplerianElements.setRaan(Math.toRadians(122.43375301361084));
+        keplerianElements.setMeanMotion(Math.toRadians(289.12911636829376));
+        keplerianElements.setEpoch(new AbsoluteDate(2025, 4, 5, 0, 0, 0.0, TimeScalesFactory.getUTC()));
         keplerianElements.setAnomalyType(PositionAngleType.MEAN);
 
         return PropagatorCreator.createNumericalPropagator(keplerianElements);

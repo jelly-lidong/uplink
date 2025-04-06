@@ -1,17 +1,17 @@
 package org.aircas.orbit.visible.handler.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import lombok.extern.slf4j.Slf4j;
+import org.aircas.orbit.model.TimeInterval;
+import org.aircas.orbit.visible.detector.SolarExclusionEventDetector;
+import org.aircas.orbit.visible.handler.EventDetectorHandler;
 import org.hipparchus.ode.events.Action;
 import org.orekit.frames.FramesFactory;
 import org.orekit.propagation.Propagator;
 import org.orekit.propagation.SpacecraftState;
 import org.orekit.propagation.events.AdaptableInterval;
 import org.orekit.time.AbsoluteDate;
-import org.aircas.orbit.visible.detector.SolarExclusionEventDetector;
-import org.aircas.orbit.visible.handler.EventDetectorHandler;
-import org.aircas.orbit.model.TimeInterval;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 太阳排除事件链节点
@@ -48,71 +48,72 @@ import java.util.List;
  * </ul>
  * </p>
  */
+@Slf4j
 public class SolarExclusionEventHandler extends EventDetectorHandler {
-    private final double thresholdAngle;
-    private final int maxIter;
-    private final double maxCheck; // 每分钟检查一次
-    private final double threshold; // 精度
 
-    public SolarExclusionEventHandler(double thresholdAngle, int maxIter, double maxCheck, double threshold) {
-        this.thresholdAngle = thresholdAngle;
-        this.maxIter = maxIter;
-        this.maxCheck = maxCheck;
-        this.threshold = threshold;
-    }
+  private final double minSolarThresholdAngle;
+  private final double minWindowDuration; // 最短窗口时长（秒）
+  private final int    maxIter;
+  private final double maxCheck;
+  private final double threshold;
 
-  @Override
-  public String getName() {
-    return "太阳遮蔽角";
+  public SolarExclusionEventHandler(double minSolarThresholdAngle, double minWindowDuration, int maxIter,
+      double maxCheck, double threshold) {
+    this.minSolarThresholdAngle = minSolarThresholdAngle;
+    this.maxIter                = maxIter;
+    this.maxCheck               = maxCheck;
+    this.threshold              = threshold;
+    this.minWindowDuration      = minWindowDuration;
   }
 
   @Override
-    public List<TimeInterval> calculate(Propagator satellitePropagator, Propagator targetPropagator, List<TimeInterval> intervals) {
-        List<TimeInterval> timeIntervals = new ArrayList<>();
-        for (TimeInterval interval : intervals) {
-            satellitePropagator.clearEventsDetectors();
-            AbsoluteDate startDate = interval.getStartDate();
-            AbsoluteDate endDate = interval.getEndDate();
+  public String getName() {
+    return "";
+  }
 
-            final TimeInterval[] newInterval = new TimeInterval[1];
-            SolarExclusionEventDetector detector = new SolarExclusionEventDetector(FramesFactory.getEME2000(),
-                    targetPropagator, thresholdAngle, maxIter, AdaptableInterval.of(maxCheck), threshold, (s, detector1, increasing) -> {
-                if (increasing) {
-                    newInterval[0] = new TimeInterval();
-                    newInterval[0].setStartDate(s.getDate());
-                    System.out.println("【event】太阳遮蔽角大于15度开始时间: " + s.getDate());
-                } else {
-                    if (newInterval[0] != null && newInterval[0].getStartDate() != null) {
-                        newInterval[0].setEndDate(s.getDate());
-                        timeIntervals.add(newInterval[0]);
-                    }
-                    System.out.println("【event】太阳遮蔽角大于15度结束时间: " + s.getDate());
-                }
-                return Action.CONTINUE;
-            });
+  @Override
+  public List<TimeInterval> calculate(Propagator satellitePropagator,
+      Propagator targetPropagator, List<TimeInterval> intervals) {
+    List<TimeInterval> timeIntervals = new ArrayList<>();
+    for (TimeInterval interval : intervals) {
+      satellitePropagator.clearEventsDetectors();
+      AbsoluteDate startDate = interval.getStartDate();
+      AbsoluteDate endDate   = interval.getEndDate();
 
-            // 将事件检测器添加到传播器
-            satellitePropagator.addEventDetector(detector);
-
-            System.out.println("传播轨道开始时间: " + startDate);
-            // 检查初始状态
-            SpacecraftState initialState = satellitePropagator.propagate(startDate);
-            if (detector.g(initialState) > 0) {
-                System.out.println("太阳遮蔽角大于15度开始时间: " + startDate);
-                newInterval[0] = new TimeInterval();
-                newInterval[0].setStartDate(startDate);
+      SolarExclusionEventDetector detector = new SolarExclusionEventDetector(
+          FramesFactory.getEME2000(),
+          targetPropagator, minSolarThresholdAngle, maxIter,
+          AdaptableInterval.of(maxCheck), threshold,
+          (s, eventDetector, increasing) -> {
+            log.debug("检测到太阳排除事件: {},date:{}", increasing ? "开始" : "结束", s.getDate());
+            if (increasing) {
+              TimeInterval newInterval = new TimeInterval();
+              newInterval.setStartDate(s.getDate());
+              timeIntervals.add(newInterval);
+            } else {
+              TimeInterval lastInterval = timeIntervals.get(timeIntervals.size() - 1);
+              lastInterval.setEndDate(s.getDate());
             }
+            return Action.CONTINUE;
+          });
 
-            // 传播轨道
-            SpacecraftState finalState = satellitePropagator.propagate(startDate, endDate);
+      SpacecraftState initialState = satellitePropagator.propagate(startDate);
+      if (detector.g(initialState) > 0 && (timeIntervals.isEmpty())) {
+        System.out.println("开始时间: " + startDate);
+        log.debug("初始状态符合条件: date:{}", initialState.getDate());
+        TimeInterval newInterval = new TimeInterval();
+        newInterval.setStartDate(startDate);
+        timeIntervals.add(newInterval);
+      }
 
-            // 检查结束状态
-            if (newInterval[0] != null && newInterval[0].getStartDate() != null && newInterval[0].getEndDate() == null && detector.g(finalState) > 0) {
-                System.out.println("太阳遮蔽角大于15度结束时间: " + endDate);
-                newInterval[0].setEndDate(endDate);
-                timeIntervals.add(newInterval[0]);
-            }
-        }
-        return timeIntervals;
+      satellitePropagator.addEventDetector(detector);
+
+      SpacecraftState finalState = satellitePropagator.propagate(startDate, endDate);
+      log.debug("最终状态: date:{}", finalState.getDate());
+      log.debug("最终状态符合条件: date:{}", finalState.getDate());
+      timeIntervals.get(timeIntervals.size() - 1).setEndDate(finalState.getDate());
+
     }
+    return timeIntervals;
+  }
 }
