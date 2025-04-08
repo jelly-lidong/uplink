@@ -1,5 +1,6 @@
 package org.aircas.orbit.visible.detector;
 
+import org.aircas.orbit.visible.TimeWinCallback;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.bodies.CelestialBodyFactory;
 import org.orekit.propagation.Propagator;

@@ -3,7 +3,8 @@ package org.aircas.orbit.visible.handler;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
-import org.aircas.orbit.model.TimeInterval;
+import org.aircas.orbit.model.TimeWindow;
+import org.aircas.orbit.visible.TimeWinCallback;
 import org.orekit.propagation.Propagator;
 
 /**
@@ -61,8 +62,8 @@ public abstract class EventDetectorHandler {
      *
      * @param satellitePropagator 卫星传播器
      * @param targetPropagator    目标传播器
-     * @param intervals           时间区间
+     * @param timeWindow           时间区间
      * @return 处理后的时间区间
      */
-    public abstract List<TimeInterval> calculate(Propagator satellitePropagator, Propagator targetPropagator, List<TimeInterval> intervals);
+    public abstract void calculate(Propagator satellitePropagator, Propagator targetPropagator, TimeWindow timeWindow, TimeWinCallback callback);
 }

@@ -2,7 +2,8 @@ package org.aircas.orbit.visible.handler.impl;
 
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import org.aircas.orbit.model.TimeInterval;
+import org.aircas.orbit.model.TimeWindow;
+import org.aircas.orbit.visible.TimeWinCallback;
 import org.aircas.orbit.visible.detector.EarthAtmosphereExclusionDetector;
 import org.aircas.orbit.visible.handler.AbstractEventDetectorHandler;
 import org.orekit.bodies.OneAxisEllipsoid;
@@ -86,24 +87,14 @@ public class EarthAtmosphereExclusionEventHandler extends AbstractEventDetectorH
      * 创建地球大气层排除事件检测器
      *
      * @param targetPropagator 目标传播器
-     * @param timeIntervals 时间区间列表
+     * @param timeIntervals    时间区间列表
+     * @param winCallback
      * @return 事件检测器
      */
     @Override
-    protected EventDetector createDetector(Propagator targetPropagator, List<TimeInterval> timeIntervals) {
+    protected EventDetector createDetector(Propagator targetPropagator, List<TimeWindow> timeIntervals, TimeWinCallback winCallback) {
 
-        return new EarthAtmosphereExclusionDetector(targetPropagator, minAtmosphereAngle, maxIter, AdaptableInterval.of(maxCheck), threshold, createDefaultHandler(timeIntervals), earth);
+        return new EarthAtmosphereExclusionDetector(targetPropagator, minAtmosphereAngle, maxIter, AdaptableInterval.of(maxCheck), threshold, createDefaultHandler(timeIntervals,winCallback), earth);
     }
-
-
-    @Override
-    public List<TimeInterval> calculate(Propagator satellitePropagator, Propagator targetPropagator, List<TimeInterval> intervals) {
-        // 先调用父类的计算方法
-        List<TimeInterval> calculatedIntervals = super.calculate(satellitePropagator, targetPropagator, intervals);
-
-        // 过滤无效的时间窗口
-        return filterShortWindows(calculatedIntervals);
-    }
-
 
 }

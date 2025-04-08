@@ -2,7 +2,8 @@ package org.aircas.orbit.visible.handler.impl;
 
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import org.aircas.orbit.model.TimeInterval;
+import org.aircas.orbit.model.TimeWindow;
+import org.aircas.orbit.visible.TimeWinCallback;
 import org.aircas.orbit.visible.detector.SolarExclusionEventDetector;
 import org.aircas.orbit.visible.handler.AbstractEventDetectorHandler;
 import org.orekit.propagation.Propagator;
@@ -59,11 +60,7 @@ public class SolarExclusionEventHandler extends AbstractEventDetectorHandler {
      * @param maxCheck 最大检查间隔（秒）
      * @param threshold 检测阈值
      */
-    public SolarExclusionEventHandler(
-        int maxIter,
-        double maxCheck,
-        double threshold, double minSolarThresholdAngle,
-        double minWindowDuration) {
+    public SolarExclusionEventHandler(int maxIter, double maxCheck, double threshold, double minSolarThresholdAngle, double minWindowDuration) {
         super(maxCheck, threshold, maxIter, minWindowDuration);
 
         if (minSolarThresholdAngle <= 0 || minSolarThresholdAngle >= 180) {
@@ -84,39 +81,20 @@ public class SolarExclusionEventHandler extends AbstractEventDetectorHandler {
 
     @Override
     public String getExclusionInfo() {
-        return String.format("最小太阳遮蔽角约束: %.2f度, 最短窗口: %.1f秒",
-            minSolarThresholdAngle, minWindowDuration);
+        return String.format("最小太阳遮蔽角约束: %.2f度, 最短窗口: %.1f秒", minSolarThresholdAngle, minWindowDuration);
     }
 
     /**
      * 创建太阳排除事件检测器
      *
      * @param targetPropagator 目标传播器
-     * @param timeIntervals 时间区间列表
+     * @param timeIntervals    时间区间列表
+     * @param winCallback
      * @return 事件检测器
      */
     @Override
-    protected EventDetector createDetector(Propagator targetPropagator,
-        List<TimeInterval> timeIntervals) {
-        return new SolarExclusionEventDetector(
-            targetPropagator,
-            minSolarThresholdAngle,
-            maxIter,
-            AdaptableInterval.of(maxCheck),
-            threshold,
-            createDefaultHandler(timeIntervals)
-        );
+    protected EventDetector createDetector(Propagator targetPropagator, List<TimeWindow> timeIntervals, TimeWinCallback winCallback) {
+        return new SolarExclusionEventDetector(targetPropagator, minSolarThresholdAngle, maxIter, AdaptableInterval.of(maxCheck), threshold, createDefaultHandler(timeIntervals,winCallback));
     }
 
-    @Override
-    public List<TimeInterval> calculate(Propagator satellitePropagator,
-        Propagator targetPropagator,
-        List<TimeInterval> intervals) {
-        // 先调用父类的计算方法
-        List<TimeInterval> calculatedIntervals = super.calculate(
-            satellitePropagator, targetPropagator, intervals);
-
-        // 过滤掉不满足最短持续时间要求的窗口
-        return filterShortWindows(calculatedIntervals);
-    }
 }

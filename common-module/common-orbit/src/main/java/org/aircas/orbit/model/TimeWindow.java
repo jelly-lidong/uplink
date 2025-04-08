@@ -15,7 +15,7 @@ import org.orekit.time.AbsoluteDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class TimeInterval {
+public class TimeWindow {
 
     /**
      * 开始时间
