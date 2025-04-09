@@ -1,7 +1,9 @@
 package org.aircas.orbit.visible;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.aircas.orbit.model.TimeWindow;
@@ -49,27 +51,39 @@ import org.orekit.propagation.Propagator;
 @Data
 public class ConstraintManager {
 
-    /** 约束条件列表 */
+    /**
+     * 约束条件列表
+     */
     private Node<EventDetectorHandler> constraintNode;
 
-    /** 是否启用并行执行 */
+    /**
+     * 是否启用并行执行
+     */
     private boolean parallelExecution;
 
-    /** 时间窗口数量阈值,超过此值时考虑使用并行处理 */
+    /**
+     * 时间窗口数量阈值,超过此值时考虑使用并行处理
+     */
     private static final int INTERVAL_THRESHOLD = 1000;
 
-    /** 约束条件数量阈值,超过此值时考虑使用并行处理 */
+    /**
+     * 约束条件数量阈值,超过此值时考虑使用并行处理
+     */
     private static final int CONSTRAINT_THRESHOLD = 3;
 
-    /** 并行处理时的分组大小 */
+    /**
+     * 并行处理时的分组大小
+     */
     private static final int GROUP_SIZE = 2;
 
-    /** 停止计算的标志 */
+    /**
+     * 停止计算的标志
+     */
     private volatile boolean stopRequested = false;
 
     private static class Node<E> {
 
-        E                         item;
+        E item;
         ConstraintManager.Node<E> next;
 
         Node(E element, ConstraintManager.Node<E> next) {
@@ -132,44 +146,37 @@ public class ConstraintManager {
         return false;
     }
 
-    public ConstraintManager setParallel(boolean parallel) {
-        this.parallelExecution = parallel;
-        log.info("设置并行执行模式: {}", parallel);
-        return this;
-    }
-
-    public List<TimeWindow> executeConstraints(Propagator satellitePropagator, Propagator targetPropagator, TimeWindow timeWindow) {
-        return executeConstraints(satellitePropagator, targetPropagator, timeWindow, null);
-    }
 
     public List<TimeWindow> executeConstraints(Propagator satellitePropagator, Propagator targetPropagator, TimeWindow timeWindow, ProgressCallback callback) {
         List<TimeWindow> result = new ArrayList<>();
         executeSerial(constraintNode, satellitePropagator, targetPropagator, timeWindow, callback, result);
-        result.sort((a, b) -> a.getStartDate().compareTo(b.getStartDate()));
+        result.sort(Comparator.comparing(TimeWindow::getStartDate));
         return mergeConsecutiveWindows(result);
     }
 
     /**
      * 执行约束条件
+     *
      * @param satellitePropagator 卫星轨道传播器
-     * @param targetPropagator 目标轨道传播器
-     * @param timeWindow 初始时间区间列表
-     * @param progressCallback 进度回调接口
+     * @param targetPropagator    目标轨道传播器
+     * @param timeWindow          初始时间区间列表
+     * @param progressCallback    进度回调接口
      * @return 满足所有约束的时间区间列表
      */
     private void executeSerial(Node<EventDetectorHandler> constraintNode, Propagator satellitePropagator, Propagator targetPropagator, TimeWindow timeWindow, ProgressCallback progressCallback,
-        List<TimeWindow> result) {
-        constraintNode.item.calculate(satellitePropagator, targetPropagator, timeWindow, (TimeWinCallback) timeInterval -> {
-                log.info("{} 1111111约束条件计算得到一个窗口: {} - {}", constraintNode.item.getName(), timeInterval.getStartDate(), timeInterval.getEndDate());
-                if (constraintNode.next != null) {
-                    // 递归调用下一个约束条件
-                    executeSerial(constraintNode.next, satellitePropagator, targetPropagator, timeInterval, progressCallback, result);
-                } else {
-                    // 如果没有下一个约束条件,则将结果添加到窗口列表中
+                               List<TimeWindow> result) {
+        log.info("开始执行约束计算{}", constraintNode.item.getName());
+        constraintNode.item.calculate(satellitePropagator, targetPropagator, timeWindow, timeInterval -> {
                     log.info("{} 约束条件计算得到一个窗口: {} - {}", constraintNode.item.getName(), timeInterval.getStartDate(), timeInterval.getEndDate());
-                    result.add(timeInterval);
-                }
-            }  // 传入当前区间的副本
+                    if (constraintNode.next != null) {
+                        // 递归调用下一个约束条件
+                        executeSerial(constraintNode.next, satellitePropagator, targetPropagator, timeInterval, progressCallback, result);
+                    } else {
+                        // 如果没有下一个约束条件,则将结果添加到窗口列表中
+                        log.info("{} 约束条件计算得到一个窗口: {} - {}", constraintNode.item.getName(), timeInterval.getStartDate(), timeInterval.getEndDate());
+                        result.add(timeInterval);
+                    }
+                }  // 传入当前区间的副本
         );
     }
 
@@ -186,7 +193,7 @@ public class ConstraintManager {
         }
 
         List<TimeWindow> mergedWindows = new ArrayList<>();
-        TimeWindow       currentWindow = windows.get(0);
+        TimeWindow currentWindow = windows.get(0);
 
         for (int i = 1; i < windows.size(); i++) {
             TimeWindow nextWindow = windows.get(i);

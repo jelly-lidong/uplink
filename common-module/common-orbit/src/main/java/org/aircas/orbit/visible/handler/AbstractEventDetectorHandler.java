@@ -8,6 +8,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
 import lombok.extern.slf4j.Slf4j;
 import org.aircas.orbit.model.TimeWindow;
 import org.aircas.orbit.util.PropagatorCreator;
@@ -26,22 +27,21 @@ public abstract class AbstractEventDetectorHandler extends EventDetectorHandler 
 
     protected final double maxCheck;  // 检查间隔
     protected final double threshold; // 检测阈值
-    protected final int    maxIter;     // 最大迭代次数
+    protected final int maxIter;     // 最大迭代次数
     protected final double minWindowDuration; // 最短窗口时长（秒）
 
-    private static final int  CORE_POOL_SIZE  = Runtime.getRuntime().availableProcessors();
-    private static final int  MAX_POOL_SIZE   = CORE_POOL_SIZE * 2;
+    private static final int CORE_POOL_SIZE = Runtime.getRuntime().availableProcessors();
+    private static final int MAX_POOL_SIZE = CORE_POOL_SIZE * 2;
     private static final long KEEP_ALIVE_TIME = 60L;
-    private static final int  QUEUE_CAPACITY  = 1000;
+    private static final int QUEUE_CAPACITY = 1000;
 
     // 创建线程池
-    private static final ExecutorService executorService = new ThreadPoolExecutor(CORE_POOL_SIZE, MAX_POOL_SIZE, KEEP_ALIVE_TIME, TimeUnit.SECONDS, new LinkedBlockingQueue<>(QUEUE_CAPACITY),
-        new ThreadPoolExecutor.CallerRunsPolicy());
+    private static final ExecutorService executorService = new ThreadPoolExecutor(CORE_POOL_SIZE, MAX_POOL_SIZE, KEEP_ALIVE_TIME, TimeUnit.SECONDS, new LinkedBlockingQueue<>(QUEUE_CAPACITY), new ThreadPoolExecutor.CallerRunsPolicy());
 
     protected AbstractEventDetectorHandler(double maxCheck, double threshold, int maxIter, double minWindowDuration) {
-        this.maxCheck  = maxCheck;
+        this.maxCheck = maxCheck;
         this.threshold = threshold;
-        this.maxIter   = maxIter;
+        this.maxIter = maxIter;
 
         if (minWindowDuration < 0) {
             throw new IllegalArgumentException("最短窗口时长不能为负值");
@@ -54,28 +54,27 @@ public abstract class AbstractEventDetectorHandler extends EventDetectorHandler 
      */
     private class WindowCalculationTask implements Runnable {
 
-        private final Propagator      satellitePropagator;
-        private final Propagator      targetPropagator;
-        private final TimeWindow      timeWindow;
+        private final Propagator satellitePropagator;
+        private final Propagator targetPropagator;
+        private final TimeWindow timeWindow;
         private final TimeWinCallback winCallback;
 
         public WindowCalculationTask(Propagator satellitePropagator, Propagator targetPropagator, TimeWindow timeWindow, TimeWinCallback winCallback) {
-            this.winCallback         = winCallback;
+            this.winCallback = winCallback;
             this.satellitePropagator = PropagatorCreator.clonePropagator(satellitePropagator);
             this.targetPropagator = PropagatorCreator.clonePropagator(targetPropagator);
-            this.timeWindow       = timeWindow;
+            this.timeWindow = timeWindow;
         }
 
 
         @Override
         public void run() {
-            //log.info("{} 开始计算时间窗口: {}", getName(), timeWindow);
             List<TimeWindow> tmpWins = new ArrayList<>();
             try {
                 satellitePropagator.clearEventsDetectors();
 
                 AbsoluteDate startDate = timeWindow.getStartDate();
-                AbsoluteDate endDate   = timeWindow.getEndDate();
+                AbsoluteDate endDate = timeWindow.getEndDate();
 
                 // 创建检测器
                 EventDetector detector = createDetector(targetPropagator, tmpWins, winCallback);
@@ -98,7 +97,7 @@ public abstract class AbstractEventDetectorHandler extends EventDetectorHandler 
                 validateState(finalState, "最终状态");
 
                 // 安全地设置结束时间
-                if (detector.g(finalState) > 0 && tmpWins.size() > 0) {
+                if (detector.g(finalState) > 0 && !tmpWins.isEmpty()) {
                     TimeWindow timeWindow = tmpWins.get(tmpWins.size() - 1);
                     if (timeWindow.getEndDate() == null) {
                         timeWindow.setEndDate(finalState.getDate());
@@ -122,7 +121,7 @@ public abstract class AbstractEventDetectorHandler extends EventDetectorHandler 
                 Orbit orbit = state.getOrbit();
                 if (orbit instanceof KeplerianOrbit) {
                     KeplerianOrbit kep = (KeplerianOrbit) orbit;
-                    double         ecc = kep.getE();
+                    double ecc = kep.getE();
                     if (ecc < 0 || Double.isNaN(ecc)) {
                         throw new IllegalStateException(String.format("%s的偏心率无效: %f", phase, ecc));
                     }
@@ -139,11 +138,9 @@ public abstract class AbstractEventDetectorHandler extends EventDetectorHandler 
     public void calculate(Propagator satellitePropagator, Propagator targetPropagator, TimeWindow inputTimeWindow, TimeWinCallback callback) {
         // 创建所有任务
         // 计算每个任务的窗口数量,按照天数划分
-        int                         timeUnit  = 1;
-        List<WindowCalculationTask> tasks     = new ArrayList<>();
-        double                      dayCount  = inputTimeWindow.getStartDate().durationFrom(inputTimeWindow.getEndDate(), DAYS);
-        AbsoluteDate                startDate = inputTimeWindow.getStartDate();
-        AbsoluteDate                endDate   = startDate.shiftedBy(timeUnit, TimeUnit.DAYS);
+        int timeUnit = 1;
+        AbsoluteDate startDate = inputTimeWindow.getStartDate();
+        AbsoluteDate endDate = startDate.shiftedBy(timeUnit, TimeUnit.DAYS);
 
         while (endDate.isBefore(inputTimeWindow.getEndDate())) {
             TimeWindow interval = new TimeWindow();
@@ -151,7 +148,7 @@ public abstract class AbstractEventDetectorHandler extends EventDetectorHandler 
             interval.setEndDate(endDate);
             executorService.execute(new WindowCalculationTask(satellitePropagator, targetPropagator, interval, callback));
             startDate = endDate;
-            endDate   = startDate.shiftedBy(timeUnit, TimeUnit.DAYS);
+            endDate = startDate.shiftedBy(timeUnit, TimeUnit.DAYS);
         }
 
         if (endDate.isAfter(inputTimeWindow.getEndDate())) {
@@ -188,6 +185,7 @@ public abstract class AbstractEventDetectorHandler extends EventDetectorHandler 
      */
     protected EventHandler createDefaultHandler(List<TimeWindow> timeIntervals, TimeWinCallback winCallback) {
         return (s, detector, increasing) -> {
+            log.info("{},increasing:{}",getName(),increasing);
             if (increasing) {
                 TimeWindow newInterval = new TimeWindow();
                 newInterval.setStartDate(s.getDate());

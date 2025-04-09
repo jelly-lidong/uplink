@@ -5,12 +5,14 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import lombok.Data;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
-@TableName("t_ground_equipment")
+@TableName(value = "t_ground_equipment", autoResultMap = true)
 @Schema(description = "地面站装备信息")
 public class GroundEquipment {
     
@@ -47,6 +49,23 @@ public class GroundEquipment {
     
     @Schema(description = "装备状态", example = "正常使用")
     private String status;
+    
+    @Schema(description = "是否支持测控数传一体化")
+    private Boolean supportShadowMode;
+    
+    @Schema(description = "支持的任务类型", example = "['测控', '数传']")
+    @TableField(typeHandler = JacksonTypeHandler.class)
+    private List<String> supportedTaskTypes;
+    
+    @Schema(description = "最大并行任务数量")
+    private Integer maxParallelTasks;
+    
+    @Schema(description = "当前并行任务数量")
+    private Integer currentParallelTasks;
+    
+    @Schema(description = "设备能力列表")
+    @TableField(typeHandler = JacksonTypeHandler.class)
+    private List<String> capabilities;
     
     @Schema(description = "描述信息")
     private String description;

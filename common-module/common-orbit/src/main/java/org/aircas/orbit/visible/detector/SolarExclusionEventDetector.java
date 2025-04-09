@@ -1,5 +1,6 @@
 package org.aircas.orbit.visible.detector;
 
+import lombok.extern.slf4j.Slf4j;
 import org.aircas.orbit.visible.TimeWinCallback;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.bodies.CelestialBodyFactory;
@@ -45,7 +46,7 @@ import org.orekit.propagation.events.handlers.EventHandler;
  * </ul>
  * </p>
  */
-
+@Slf4j
 public class SolarExclusionEventDetector extends BaseObservationDetector<SolarExclusionEventDetector> {
 
     private final double thresholdAngle;
@@ -64,10 +65,11 @@ public class SolarExclusionEventDetector extends BaseObservationDetector<SolarEx
     public double g(SpacecraftState s) {
         Vector3D sunPosition = CelestialBodyFactory.getSun().getPVCoordinates(s.getDate(), inertialFrame).getPosition();
         Vector3D satellitePosition = s.getPVCoordinates().getPosition();
-        Vector3D satelliteToSun    = sunPosition.subtract(satellitePosition);
+        Vector3D satelliteToSun = sunPosition.subtract(satellitePosition);
         Vector3D satelliteToTarget = getRelativePosition(s);
 
         double angle = calculateAngle(satelliteToSun, satelliteToTarget);
-        return angle - Math.toRadians(thresholdAngle);
+        log.debug("太阳遮蔽角：{}",angle);
+        return Math.toDegrees(angle) - thresholdAngle;
     }
 }

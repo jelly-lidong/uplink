@@ -1,8 +1,10 @@
 package com.example.resource.controller;
 
 import com.common.model.entity.resource.GroundEquipment;
+import com.common.model.entity.task.EquipmentCapability;
 import com.common.model.response.Result;
 import com.example.resource.service.GroundEquipmentService;
+import com.example.resource.service.ShadowResourceServiceExt;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
@@ -27,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class GroundEquipmentController {
 
   private final GroundEquipmentService groundEquipmentService;
+  private final ShadowResourceServiceExt shadowResourceService;
 
   @ApiOperation("创建装备")
   @PostMapping
@@ -83,5 +86,36 @@ public class GroundEquipmentController {
       @RequestParam Double maxFrequency,
       @RequestParam(required = false) String frequencyBand) {
     return Result.success(groundEquipmentService.getByFrequencyRange(minFrequency, maxFrequency, frequencyBand));
+  }
+
+  @ApiOperation("更新设备影随能力")
+  @PutMapping("/{id}/shadow-capability")
+  public Result<GroundEquipment> updateShadowCapability(
+      @PathVariable Long id,
+      @RequestParam Boolean supportShadowMode,
+      @RequestBody(required = false) List<String> supportedTaskTypes,
+      @RequestParam(required = false, defaultValue = "1") Integer maxParallelTasks) {
+    return Result.success(groundEquipmentService.updateShadowCapability(
+        id, supportShadowMode, supportedTaskTypes, maxParallelTasks));
+  }
+
+  @ApiOperation("获取设备影随能力详情")
+  @GetMapping("/{id}/capability")
+  public Result<EquipmentCapability> getEquipmentCapability(@PathVariable Long id) {
+    return Result.success(groundEquipmentService.getEquipmentCapability(id));
+  }
+
+  @ApiOperation("更新设备当前任务数")
+  @PutMapping("/{id}/task-count")
+  public Result<GroundEquipment> updateTaskCount(
+      @PathVariable Long id,
+      @RequestParam Integer count) {
+    return Result.success(groundEquipmentService.updateTaskCount(id, count));
+  }
+
+  @ApiOperation("查询所有支持影随的设备")
+  @GetMapping("/shadow-supported")
+  public Result<List<GroundEquipment>> findAllShadowSupportedEquipments() {
+    return Result.success(((ShadowResourceServiceExt) shadowResourceService).findAllShadowSupportedEquipments());
   }
 } 
