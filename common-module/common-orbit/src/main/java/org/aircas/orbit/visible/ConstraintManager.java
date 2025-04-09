@@ -1,9 +1,7 @@
 package org.aircas.orbit.visible;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.aircas.orbit.model.TimeWindow;
@@ -83,7 +81,7 @@ public class ConstraintManager {
 
     private static class Node<E> {
 
-        E item;
+        E                         item;
         ConstraintManager.Node<E> next;
 
         Node(E element, ConstraintManager.Node<E> next) {
@@ -98,7 +96,9 @@ public class ConstraintManager {
 
         void onConstraintComplete(String constraintName, int current, int total, List<TimeWindow> results);
 
-        void onComplete(List<TimeWindow> finalResults);
+        void onFinished();
+
+        void onWindow(TimeWindow window);
     }
 
     public ConstraintManager() {
@@ -147,11 +147,10 @@ public class ConstraintManager {
     }
 
 
-    public List<TimeWindow> executeConstraints(Propagator satellitePropagator, Propagator targetPropagator, TimeWindow timeWindow, ProgressCallback callback) {
-        List<TimeWindow> result = new ArrayList<>();
-        executeSerial(constraintNode, satellitePropagator, targetPropagator, timeWindow, callback, result);
-        result.sort(Comparator.comparing(TimeWindow::getStartDate));
-        return mergeConsecutiveWindows(result);
+    public void executeConstraints(Propagator satellitePropagator, Propagator targetPropagator, TimeWindow timeWindow, ProgressCallback callback) {
+        executeSerial(constraintNode, satellitePropagator, targetPropagator, timeWindow, callback);
+//        result.sort(Comparator.comparing(TimeWindow::getStartDate));
+//        callback.onComplete(mergeConsecutiveWindows(result));
     }
 
     /**
@@ -163,20 +162,20 @@ public class ConstraintManager {
      * @param progressCallback    进度回调接口
      * @return 满足所有约束的时间区间列表
      */
-    private void executeSerial(Node<EventDetectorHandler> constraintNode, Propagator satellitePropagator, Propagator targetPropagator, TimeWindow timeWindow, ProgressCallback progressCallback,
-                               List<TimeWindow> result) {
-        log.info("开始执行约束计算{}", constraintNode.item.getName());
+    private void executeSerial(Node<EventDetectorHandler> constraintNode, Propagator satellitePropagator, Propagator targetPropagator, TimeWindow timeWindow, ProgressCallback progressCallback
+    ) {
+//        log.info("开始执行约束计算{}", constraintNode.item.getName());
         constraintNode.item.calculate(satellitePropagator, targetPropagator, timeWindow, timeInterval -> {
-                    log.info("{} 约束条件计算得到一个窗口: {} - {}", constraintNode.item.getName(), timeInterval.getStartDate(), timeInterval.getEndDate());
-                    if (constraintNode.next != null) {
-                        // 递归调用下一个约束条件
-                        executeSerial(constraintNode.next, satellitePropagator, targetPropagator, timeInterval, progressCallback, result);
-                    } else {
-                        // 如果没有下一个约束条件,则将结果添加到窗口列表中
-                        log.info("{} 约束条件计算得到一个窗口: {} - {}", constraintNode.item.getName(), timeInterval.getStartDate(), timeInterval.getEndDate());
-                        result.add(timeInterval);
-                    }
-                }  // 传入当前区间的副本
+//                    log.info("{} 约束条件计算得到一个窗口: {} - {}", constraintNode.item.getName(), timeInterval.getStartDate(), timeInterval.getEndDate());
+                if (constraintNode.next != null) {
+                    // 递归调用下一个约束条件
+                    executeSerial(constraintNode.next, satellitePropagator, targetPropagator, timeInterval, progressCallback);
+                } else {
+                    // 如果没有下一个约束条件,则将结果添加到窗口列表中
+//                        log.info("{} 约束条件计算得到一个窗口: {} - {}", constraintNode.item.getName(), timeInterval.getStartDate(), timeInterval.getEndDate());
+                    progressCallback.onWindow(timeInterval);
+                }
+            }  // 传入当前区间的副本
         );
     }
 
@@ -193,7 +192,7 @@ public class ConstraintManager {
         }
 
         List<TimeWindow> mergedWindows = new ArrayList<>();
-        TimeWindow currentWindow = windows.get(0);
+        TimeWindow       currentWindow = windows.get(0);
 
         for (int i = 1; i < windows.size(); i++) {
             TimeWindow nextWindow = windows.get(i);

@@ -2,6 +2,7 @@ package org.aircas.orbit;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.aircas.orbit.model.TimeWindow;
 import org.aircas.orbit.util.OrbitUtil;
@@ -43,8 +44,8 @@ public class MainApp {
         double threshold = 0.001;
 
         // 添加约束
-        manager.addConstraint(new SolarExclusionEventHandler(maxIter, maxCheck, threshold, 5.0, 60))
-            .addConstraint(new LunarExclusionEventHandler(maxIter, maxCheck, threshold, 5.0, 60))
+        manager.addConstraint(new SolarExclusionEventHandler(maxIter, maxCheck, threshold, 90.0, 60))
+            .addConstraint(new LunarExclusionEventHandler(maxIter, maxCheck, threshold, 60.0, 60))
             .addConstraint(new EarthAtmosphereExclusionEventHandler(maxIter, maxCheck, threshold, 0, 60))
             .addConstraint(new DistanceExclusionEventHandler(maxIter, maxCheck, threshold, 50, 1000, 60));
 
@@ -55,7 +56,7 @@ public class MainApp {
         AbsoluteDate endDate   = new AbsoluteDate(2025, 4, 10, 0, 0, 0.0, TimeScalesFactory.getUTC());
 
         // 执行约束检查（带进度回调）
-        List<TimeWindow> validIntervals = manager.executeConstraints(satellitePropagator, targetPropagator, new TimeWindow(startDate, endDate), new ConstraintManager.ProgressCallback() {
+        manager.executeConstraints(satellitePropagator, targetPropagator, new TimeWindow(startDate, endDate), new ConstraintManager.ProgressCallback() {
             @Override
             public void onStart(int totalConstraints) {
                 log.warn("开始执行约束检查，共{}个约束", totalConstraints);
@@ -67,16 +68,16 @@ public class MainApp {
             }
 
             @Override
-            public void onComplete(List<TimeWindow> finalResults) {
-                log.warn("约束检查完成，最终有{}个有效时间窗口", finalResults.size());
-                for (TimeWindow interval : finalResults) {
-                    log.warn("有效时间窗口：{} 至 {}", interval.getStartDate().toString(), interval.getEndDate().toString());
-                }
+            public void onFinished() {
+
+            }
+
+            @Override
+            public void onWindow(TimeWindow window) {
+                log.info("有效时间窗口：{} 至 {}，共{}秒", window.getStartDate().toString().substring(0,19), window.getEndDate().toString().substring(0,19), window.getEndDate().durationFrom(window.getStartDate(),
+                    TimeUnit.SECONDS));
             }
         });
-
-        validIntervals.forEach(interval -> log.info("有效时间窗口：{} 至 {}", interval.getStartDate().toString(), interval.getEndDate().toString()));
-
         log.info("end....");
     }
 

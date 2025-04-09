@@ -4,7 +4,9 @@ import static java.util.concurrent.TimeUnit.DAYS;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -34,9 +36,6 @@ public abstract class AbstractEventDetectorHandler extends EventDetectorHandler 
     private static final int MAX_POOL_SIZE = CORE_POOL_SIZE * 2;
     private static final long KEEP_ALIVE_TIME = 60L;
     private static final int QUEUE_CAPACITY = 1000;
-
-    // 创建线程池
-    private static final ExecutorService executorService = new ThreadPoolExecutor(CORE_POOL_SIZE, MAX_POOL_SIZE, KEEP_ALIVE_TIME, TimeUnit.SECONDS, new LinkedBlockingQueue<>(QUEUE_CAPACITY), new ThreadPoolExecutor.CallerRunsPolicy());
 
     protected AbstractEventDetectorHandler(double maxCheck, double threshold, int maxIter, double minWindowDuration) {
         this.maxCheck = maxCheck;
@@ -135,18 +134,20 @@ public abstract class AbstractEventDetectorHandler extends EventDetectorHandler 
 
 
     @Override
-    public void calculate(Propagator satellitePropagator, Propagator targetPropagator, TimeWindow inputTimeWindow, TimeWinCallback callback) {
+    public void calculate(Propagator satellitePropagator, Propagator targetPropagator, TimeWindow inputTimeWindow, TimeWinCallback callback) throws RuntimeException {
+        ExecutorService executorService = new ThreadPoolExecutor(CORE_POOL_SIZE, MAX_POOL_SIZE, KEEP_ALIVE_TIME, TimeUnit.SECONDS, new LinkedBlockingQueue<>(QUEUE_CAPACITY), new ThreadPoolExecutor.CallerRunsPolicy());
         // 创建所有任务
         // 计算每个任务的窗口数量,按照天数划分
         int timeUnit = 1;
         AbsoluteDate startDate = inputTimeWindow.getStartDate();
         AbsoluteDate endDate = startDate.shiftedBy(timeUnit, TimeUnit.DAYS);
 
+        List<Future<?>> futures = new ArrayList<>();
         while (endDate.isBefore(inputTimeWindow.getEndDate())) {
             TimeWindow interval = new TimeWindow();
             interval.setStartDate(startDate);
             interval.setEndDate(endDate);
-            executorService.execute(new WindowCalculationTask(satellitePropagator, targetPropagator, interval, callback));
+            futures.add( executorService.submit(new WindowCalculationTask(satellitePropagator, targetPropagator, interval, callback)));
             startDate = endDate;
             endDate = startDate.shiftedBy(timeUnit, TimeUnit.DAYS);
         }
@@ -155,25 +156,19 @@ public abstract class AbstractEventDetectorHandler extends EventDetectorHandler 
             TimeWindow interval = new TimeWindow();
             interval.setStartDate(startDate);
             interval.setEndDate(inputTimeWindow.getEndDate());
-            executorService.execute(new WindowCalculationTask(satellitePropagator, targetPropagator, interval, callback));
+            futures.add(executorService.submit(new WindowCalculationTask(satellitePropagator, targetPropagator, interval, callback)));
         }
-    }
 
-    /**
-     * 关闭线程池
-     */
-    public static void shutdown() {
-        executorService.shutdown();
-        try {
-            if (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
-                executorService.shutdownNow();
+        for (Future<?> future : futures) {
+            try {
+                future.get();
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e);
             }
-        } catch (InterruptedException e) {
-            executorService.shutdownNow();
-            Thread.currentThread().interrupt();
         }
+//        log.warn("完成所有窗口计算：【{}】 ", getName());
+        executorService.shutdown();
     }
-
 
     /**
      * 创建具体的事件检测器
@@ -185,7 +180,7 @@ public abstract class AbstractEventDetectorHandler extends EventDetectorHandler 
      */
     protected EventHandler createDefaultHandler(List<TimeWindow> timeIntervals, TimeWinCallback winCallback) {
         return (s, detector, increasing) -> {
-            log.info("{},increasing:{}",getName(),increasing);
+            //log.info("{},increasing:{}",getName(),increasing);
             if (increasing) {
                 TimeWindow newInterval = new TimeWindow();
                 newInterval.setStartDate(s.getDate());

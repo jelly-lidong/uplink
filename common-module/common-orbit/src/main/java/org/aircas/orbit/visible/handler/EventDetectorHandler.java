@@ -65,5 +65,5 @@ public abstract class EventDetectorHandler {
      * @param timeWindow           时间区间
      * @return 处理后的时间区间
      */
-    public abstract void calculate(Propagator satellitePropagator, Propagator targetPropagator, TimeWindow timeWindow, TimeWinCallback callback);
+    public abstract void calculate(Propagator satellitePropagator, Propagator targetPropagator, TimeWindow timeWindow, TimeWinCallback callback) throws RuntimeException;
 }

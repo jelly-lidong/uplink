@@ -69,7 +69,7 @@ public class SolarExclusionEventDetector extends BaseObservationDetector<SolarEx
         Vector3D satelliteToTarget = getRelativePosition(s);
 
         double angle = calculateAngle(satelliteToSun, satelliteToTarget);
-        log.debug("太阳遮蔽角：{}",angle);
+        //log.info("太阳遮蔽角：{}",Math.toDegrees(angle) - thresholdAngle);
         return Math.toDegrees(angle) - thresholdAngle;
     }
 }
