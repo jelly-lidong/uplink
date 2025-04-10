@@ -1,0 +1,48 @@
+成功加载Orekit...
+2025-04-10 11:56:25.397  INFO |   |            main | org.aircas.orbit.MainApp                :119  | 任务卫星轨道六根数
+2025-04-10 11:56:25.403  INFO |   |            main | org.aircas.orbit.MainApp                :120  | 半长轴: 6945045.1
+2025-04-10 11:56:25.413  INFO |   |            main | org.aircas.orbit.MainApp                :121  | 偏心率: 0.0014876690693199635
+2025-04-10 11:56:25.413  INFO |   |            main | org.aircas.orbit.MainApp                :122  | 轨道倾角: 97.72345918416977
+2025-04-10 11:56:25.413  INFO |   |            main | org.aircas.orbit.MainApp                :123  | 近地点幅角: 96.93742203712462
+2025-04-10 11:56:25.414  INFO |   |            main | org.aircas.orbit.MainApp                :124  | 升交点赤经: 122.43375301361084
+2025-04-10 11:56:25.414  INFO |   |            main | org.aircas.orbit.MainApp                :125  | 平近点角: 289.12911636829375
+2025-04-10 11:56:25.414  INFO |   |            main | org.aircas.orbit.MainApp                :126  | 历元时间: 2025-04-05T00:00:00.000Z
+2025-04-10 11:56:25.417  INFO |   |            main | org.aircas.orbit.MainApp                :127  | --------------------------------------------------------------------------------
+2025-04-10 11:56:26.697  INFO |   |            main | org.aircas.orbit.MainApp                :100  | 目标卫星两行报
+2025-04-10 11:56:26.700  INFO |   |            main | org.aircas.orbit.MainApp                :101  | line1: 1 25544U 98067A   20344.52777778  .00001264  00000-0  29611-4 0  9993
+2025-04-10 11:56:26.700  INFO |   |            main | org.aircas.orbit.MainApp                :102  | line2: 2 25544  51.6460  21.4613 0007417  45.5487 314.5526 15.49112347256347
+2025-04-10 11:56:26.700  INFO |   |            main | org.aircas.orbit.MainApp                :103  | --------------------------------------------------------------------------------
+2025-04-10 11:56:26.759  INFO |   |            main | o.a.orbit.visible.ConstraintManager     :107  | 初始化约束管理器
+2025-04-10 11:56:26.764  INFO |   |            main | org.aircas.orbit.MainApp                :52   | 约束信息
+2025-04-10 11:56:26.764  INFO |   |            main | org.aircas.orbit.MainApp                :53   | 最小太阳遮蔽角：90.0
+2025-04-10 11:56:26.765  INFO |   |            main | org.aircas.orbit.MainApp                :54   | 最小月球遮蔽角：60.0
+2025-04-10 11:56:26.765  INFO |   |            main | org.aircas.orbit.MainApp                :55   | 最小地气光角度：0
+2025-04-10 11:56:26.765  INFO |   |            main | org.aircas.orbit.MainApp                :56   | 最近距离：50,最远距离：1000
+2025-04-10 11:56:26.765  INFO |   |            main | org.aircas.orbit.MainApp                :57   | 最短事件窗口：60
+2025-04-10 11:56:26.766  INFO |   |            main | org.aircas.orbit.MainApp                :58   | --------------------------------------------------------------------------------
+2025-04-10 11:56:26.768  INFO |   |            main | org.aircas.orbit.MainApp                :62   | 开始时间：2025-04-05T00:00:00
+2025-04-10 11:56:26.772  INFO |   |            main | org.aircas.orbit.MainApp                :63   | 结束时间：2025-04-10T00:00:00
+2025-04-10 11:56:26.774  INFO |   |            main | org.aircas.orbit.MainApp                :64   | --------------------------------------------------------------------------------
+2025-04-10 11:56:26.775  WARN |   |            main | org.aircas.orbit.MainApp                :69   | 开始执行约束检查，共4个约束
+2025-04-10 11:56:42.576  INFO |   |            main | org.aircas.orbit.MainApp                :89   | 有效时间窗口：2025-04-05T05:50:41 至 2025-04-05T05:54:36，共235秒
+2025-04-10 11:56:42.579  INFO |   |            main | org.aircas.orbit.MainApp                :89   | 有效时间窗口：2025-04-05T07:23:06 至 2025-04-05T07:30:43，共457秒
+2025-04-10 11:56:42.580  INFO |   |            main | org.aircas.orbit.MainApp                :89   | 有效时间窗口：2025-04-05T08:56:22 至 2025-04-05T09:04:31，共489秒
+2025-04-10 11:56:42.580  INFO |   |            main | org.aircas.orbit.MainApp                :89   | 有效时间窗口：2025-04-05T10:30:00 至 2025-04-05T10:38:22，共502秒
+2025-04-10 11:56:42.581  INFO |   |            main | org.aircas.orbit.MainApp                :89   | 有效时间窗口：2025-04-05T12:03:53 至 2025-04-05T12:12:15，共501秒
+2025-04-10 11:56:42.581  INFO |   |            main | org.aircas.orbit.MainApp                :89   | 有效时间窗口：2025-04-05T13:38:00 至 2025-04-05T13:46:09，共489秒
+2025-04-10 11:56:42.581  INFO |   |            main | org.aircas.orbit.MainApp                :89   | 有效时间窗口：2025-04-05T15:12:19 至 2025-04-05T15:20:04，共465秒
+2025-04-10 11:56:42.582  INFO |   |            main | org.aircas.orbit.MainApp                :89   | 有效时间窗口：2025-04-05T16:07:30 至 2025-04-05T16:14:20，共410秒
+2025-04-10 11:56:42.582  INFO |   |            main | org.aircas.orbit.MainApp                :89   | 有效时间窗口：2025-04-05T16:46:51 至 2025-04-05T16:53:14，共383秒
+2025-04-10 11:56:42.582  INFO |   |            main | org.aircas.orbit.MainApp                :89   | 有效时间窗口：2025-04-05T18:21:34 至 2025-04-05T18:27:54，共380秒
+2025-04-10 11:56:42.583  INFO |   |            main | org.aircas.orbit.MainApp                :89   | 有效时间窗口：2025-04-05T19:56:31 至 2025-04-05T20:01:48，共318秒
+2025-04-10 11:56:42.583  INFO |   |            main | org.aircas.orbit.MainApp                :89   | 有效时间窗口：2025-04-05T21:31:40 至 2025-04-05T21:35:41，共241秒
+2025-04-10 11:56:42.583  INFO |   |            main | org.aircas.orbit.MainApp                :89   | 有效时间窗口：2025-04-05T23:07:05 至 2025-04-05T23:09:31，共146秒
+2025-04-10 11:56:42.583  INFO |   |            main | org.aircas.orbit.MainApp                :89   | 有效时间窗口：2025-04-06T01:31:11 至 2025-04-06T01:37:04，共352秒
+2025-04-10 11:56:42.584  INFO |   |            main | org.aircas.orbit.MainApp                :89   | 有效时间窗口：2025-04-07T09:02:41 至 2025-04-07T09:07:00，共259秒
+2025-04-10 11:56:42.584  INFO |   |            main | org.aircas.orbit.MainApp                :89   | 有效时间窗口：2025-04-07T23:08:44 至 2025-04-07T23:14:05，共321秒
+2025-04-10 11:56:42.584  INFO |   |            main | org.aircas.orbit.MainApp                :89   | 有效时间窗口：2025-04-08T00:43:51 至 2025-04-08T00:47:59，共248秒
+2025-04-10 11:56:42.584  INFO |   |            main | org.aircas.orbit.MainApp                :89   | 有效时间窗口：2025-04-08T02:19:12 至 2025-04-08T02:21:50，共159秒
+2025-04-10 11:56:42.585  INFO |   |            main | org.aircas.orbit.MainApp                :89   | 有效时间窗口：2025-04-08T04:43:03 至 2025-04-08T04:49:36，共393秒
+2025-04-10 11:56:42.585  INFO |   |            main | org.aircas.orbit.MainApp                :92   | end....
+
+Process finished with exit code 0

@@ -1,6 +1,7 @@
 package org.aircas.orbit.visible;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -146,37 +147,114 @@ public class ConstraintManager {
         return false;
     }
 
-
-    public void executeConstraints(Propagator satellitePropagator, Propagator targetPropagator, TimeWindow timeWindow, ProgressCallback callback) {
-        executeSerial(constraintNode, satellitePropagator, targetPropagator, timeWindow, callback);
-//        result.sort(Comparator.comparing(TimeWindow::getStartDate));
-//        callback.onComplete(mergeConsecutiveWindows(result));
-    }
-
     /**
      * 执行约束条件
      *
      * @param satellitePropagator 卫星轨道传播器
      * @param targetPropagator    目标轨道传播器
-     * @param timeWindow          初始时间区间列表
-     * @param progressCallback    进度回调接口
+     * @param timeWindow          初始时间区间
+     * @param callback            进度回调接口
      * @return 满足所有约束的时间区间列表
      */
-    private void executeSerial(Node<EventDetectorHandler> constraintNode, Propagator satellitePropagator, Propagator targetPropagator, TimeWindow timeWindow, ProgressCallback progressCallback
-    ) {
-//        log.info("开始执行约束计算{}", constraintNode.item.getName());
-        constraintNode.item.calculate(satellitePropagator, targetPropagator, timeWindow, timeInterval -> {
-//                    log.info("{} 约束条件计算得到一个窗口: {} - {}", constraintNode.item.getName(), timeInterval.getStartDate(), timeInterval.getEndDate());
-                if (constraintNode.next != null) {
-                    // 递归调用下一个约束条件
-                    executeSerial(constraintNode.next, satellitePropagator, targetPropagator, timeInterval, progressCallback);
-                } else {
-                    // 如果没有下一个约束条件,则将结果添加到窗口列表中
-//                        log.info("{} 约束条件计算得到一个窗口: {} - {}", constraintNode.item.getName(), timeInterval.getStartDate(), timeInterval.getEndDate());
-                    progressCallback.onWindow(timeInterval);
-                }
-            }  // 传入当前区间的副本
-        );
+    public List<TimeWindow> executeConstraints(Propagator satellitePropagator, Propagator targetPropagator, TimeWindow timeWindow, ProgressCallback callback) {
+        List<TimeWindow> result = new ArrayList<>();
+        int totalConstraints = countConstraints();
+        
+        if (callback != null) {
+            callback.onStart(totalConstraints);
+        }
+        
+        // 创建结果收集器
+        TimeWinCallback resultCollector = window -> {
+            result.add(window);
+            if (callback != null) {
+                callback.onWindow(window);
+            }
+        };
+        
+        // 执行约束链
+        executeSerialConstraints(constraintNode, satellitePropagator, targetPropagator, timeWindow, resultCollector, callback, 1, totalConstraints);
+        
+        if (callback != null) {
+            callback.onFinished();
+        }
+        
+        // 对结果进行排序并合并连续窗口
+        if (!result.isEmpty()) {
+            result.sort(Comparator.comparing(TimeWindow::getStartDate));
+            return mergeConsecutiveWindows(result);
+        }
+
+        return new ArrayList<>();
+    }
+
+    /**
+     * 执行约束条件链
+     *
+     * @param constraintNode      当前约束节点
+     * @param satellitePropagator 卫星轨道传播器
+     * @param targetPropagator    目标轨道传播器
+     * @param timeWindow          初始时间区间
+     * @param resultCollector     结果收集回调
+     * @param progressCallback    进度回调接口
+     * @param currentIndex        当前约束索引
+     * @param totalConstraints    约束总数
+     */
+    private void executeSerialConstraints(Node<EventDetectorHandler> constraintNode, 
+                              Propagator satellitePropagator, 
+                              Propagator targetPropagator, 
+                              TimeWindow timeWindow, 
+                              TimeWinCallback resultCollector, 
+                              ProgressCallback progressCallback,
+                              int currentIndex,
+                              int totalConstraints) {
+        if (shouldStop() || constraintNode == null) {
+            return;
+        }
+        
+        // 记录当前约束产生的所有时间窗口
+        List<TimeWindow> currentConstraintWindows = new ArrayList<>();
+        
+        // 创建约束计算回调
+        TimeWinCallback constraintCallback = timeInterval -> {
+            currentConstraintWindows.add(timeInterval);
+
+            if (constraintNode.next != null) {
+                // 递归调用下一个约束条件
+                executeSerialConstraints(constraintNode.next,
+                               satellitePropagator,
+                               targetPropagator,
+                               timeInterval,
+                               resultCollector,
+                               progressCallback,
+                               currentIndex + 1,
+                               totalConstraints);
+            } else {
+                // 如果没有下一个约束条件，则将结果添加到窗口列表中
+                resultCollector.notify(timeInterval);
+            }
+        };
+        
+        // 执行当前约束的计算
+        constraintNode.item.calculate(satellitePropagator, targetPropagator, timeWindow, constraintCallback);
+        
+        // 通知当前约束已完成
+        if (progressCallback != null) {
+            progressCallback.onConstraintComplete(constraintNode.item.getName(), currentIndex, totalConstraints, currentConstraintWindows);
+        }
+    }
+
+    /**
+     * 计算约束条件的数量
+     */
+    private int countConstraints() {
+        int count = 0;
+        Node<EventDetectorHandler> current = constraintNode;
+        while (current != null) {
+            count++;
+            current = current.next;
+        }
+        return count;
     }
 
     /**
