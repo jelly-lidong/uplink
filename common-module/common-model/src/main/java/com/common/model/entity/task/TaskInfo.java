@@ -25,7 +25,7 @@ public class TaskInfo extends TreeNode<TaskInfo> {
     private Long id;
 
     @ApiModelProperty(value = "任务ID")
-    private String taskId;
+    private Long taskId;
     
     @ApiModelProperty(value = "任务名称")
     private String taskName;

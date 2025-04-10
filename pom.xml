@@ -12,8 +12,9 @@
     <module>service-gateway</module>
     <module>soft-cmd</module>
     <module>soft-task-mission</module>
-    <module>soft-resource</module>
+    <module>service-resource-manager</module>
     <module>common-module</module>
+    <module>service-demand-manager</module>
   </modules>
 
   <properties>

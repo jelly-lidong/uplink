@@ -3,7 +3,6 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/common-module/common-model/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/common-module/common-orbit/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/common-module/common-orbit/src/main/java/org/aircas/orbit/visible/ConstraintManager.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/common-module/common-utils/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/common-module/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/common-module/src/main/resources" charset="UTF-8" />
@@ -12,15 +11,16 @@
     <file url="file://$PROJECT_DIR$/server-consumer/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/server-liteflow/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/server-provider/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/service-demand-manager/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/service-gateway/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/service-platform/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/service-resource-manager/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/soft-cmd/common-cmd/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/soft-cmd/common-coder/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/soft-cmd/common-coder/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/soft-cmd/service-cmd-coder/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/soft-cmd/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/soft-cmd/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/soft-resource/service-resource-manager/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/soft-resource/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/soft-resource/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/soft-task-mission/service-mission-planning/src/main/java" charset="UTF-8" />
@@ -31,5 +31,6 @@
     <file url="file://$PROJECT_DIR$/soft-task-mission/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/报价/试验筹划子系统/靶场能力分析软件功能点估算表.md" charset="GBK" />
   </component>
 </project>

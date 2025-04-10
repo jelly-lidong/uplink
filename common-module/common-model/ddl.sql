@@ -290,3 +290,86 @@ create index idx_task_template_id
     on task_template_constraint (task_template_id)
     comment '任务模板ID索引';
 
+create table task_schedule
+(
+    id                 bigint auto_increment comment '主键ID'
+        primary key,
+    task_id            bigint                             not null comment '任务ID',
+    ground_station_id  bigint                             null comment '地面站ID',
+    equipment_id       bigint                             null comment '设备ID',
+    start_time         datetime                           null comment '计划开始时间',
+    end_time           datetime                           null comment '计划结束时间',
+    status             varchar(32)                        null comment '计划状态',
+    has_shadow_relation tinyint(1)                        null comment '是否有影随关系：0-否，1-是',
+    is_preempted       tinyint(1)                         null comment '是否被抢占：0-否，1-是',
+    description        varchar(512)                       null comment '描述信息',
+    create_time        datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    update_time        datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    constraint fk_task_schedule_task
+        foreign key (task_id) references task_info (id)
+)
+    comment '任务调度计划';
+
+create index idx_task_id_schedule
+    on task_schedule (task_id);
+
+create index idx_ground_station_id_schedule
+    on task_schedule (ground_station_id);
+
+create index idx_equipment_id_schedule
+    on task_schedule (equipment_id);
+
+create index idx_start_time_schedule
+    on task_schedule (start_time);
+
+create table equipment_capability
+(
+    id                  bigint auto_increment comment '主键ID'
+        primary key,
+    equipment_id        bigint                             not null comment '设备ID',
+    equipment_name      varchar(100)                       not null comment '设备名称',
+    shadow_mode         varchar(32)                        null comment '影随模式',
+    max_concurrent_tasks int                               null comment '最大同时任务数',
+    current_task_count  int                               null comment '当前任务数',
+    supported_task_types json                              null comment '支持的任务类型',
+    load_threshold      double                             null comment '资源负载阈值(%)',
+    current_load        double                             null comment '当前负载(%)',
+    status              varchar(32)                        null comment '状态：ACTIVE-活跃, INACTIVE-不活跃, MAINTENANCE-维护中',
+    create_time         datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    update_time         datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    constraint fk_equipment_capability_equipment
+        foreign key (equipment_id) references t_ground_equipment (id)
+)
+    comment '设备能力';
+
+create index idx_equipment_id_capability
+    on equipment_capability (equipment_id);
+
+create index idx_status_capability
+    on equipment_capability (status);
+
+create table shadow_relation
+(
+    id                  bigint auto_increment comment '主键ID'
+        primary key,
+    primary_schedule_id bigint                             not null comment '主任务调度ID',
+    shadow_schedule_id  bigint                             not null comment '影随任务调度ID',
+    shadow_mode         varchar(32)                        null comment '影随模式',
+    priority            int                                null comment '优先级',
+    resource_occupancy  double                             null comment '资源占用率(%)',
+    splittable          tinyint(1)                         null comment '是否可拆分：0-否，1-是',
+    create_time         datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    update_time         datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    constraint fk_shadow_relation_primary
+        foreign key (primary_schedule_id) references task_schedule (id),
+    constraint fk_shadow_relation_shadow
+        foreign key (shadow_schedule_id) references task_schedule (id)
+)
+    comment '影随关系';
+
+create index idx_primary_schedule_id
+    on shadow_relation (primary_schedule_id);
+
+create index idx_shadow_schedule_id
+    on shadow_relation (shadow_schedule_id);
+

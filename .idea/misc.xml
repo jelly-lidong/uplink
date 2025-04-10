@@ -30,6 +30,7 @@
         <option value="$PROJECT_DIR$/server-provider/pom.xml" />
         <option value="$PROJECT_DIR$/service-platform/pom.xml" />
         <option value="$PROJECT_DIR$/soft-cmd/service-cmd-coder/pom.xml" />
+        <option value="$PROJECT_DIR$/soft-resource/pom.xml" />
       </set>
     </option>
   </component>

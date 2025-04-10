@@ -8,6 +8,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="common-cmd" />
+        <module name="service-demand-manager" />
         <module name="service-resource-manager" />
         <module name="service-gateway" />
         <module name="service-mission-planning" />
@@ -26,6 +27,7 @@
       <module name="server-liteflow" target="1.8" />
       <module name="server-provider" target="1.8" />
       <module name="service-platform" target="1.8" />
+      <module name="soft-resource" target="1.8" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
@@ -42,6 +44,7 @@
       <module name="server-liteflow" options="-parameters" />
       <module name="server-provider" options="-parameters" />
       <module name="service-cmd-coder" options="-parameters" />
+      <module name="service-demand-manager" options="-parameters" />
       <module name="service-gateway" options="-parameters" />
       <module name="service-mission-planning" options="-parameters" />
       <module name="service-mission-preparation" options="-parameters" />
