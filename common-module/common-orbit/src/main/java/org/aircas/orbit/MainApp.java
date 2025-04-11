@@ -48,12 +48,12 @@ public class MainApp {
         manager.addConstraint(new SolarExclusionEventHandler(maxIter, maxCheck, threshold, 90.0, 60))
                 .addConstraint(new LunarExclusionEventHandler(maxIter, maxCheck, threshold, 60.0, 60))
                 .addConstraint(new EarthAtmosphereExclusionEventHandler(maxIter, maxCheck, threshold, 0, 60))
-                .addConstraint(new DistanceExclusionEventHandler(maxIter, maxCheck, threshold, 50, 1000, 60));
+                .addConstraint(new DistanceExclusionEventHandler(maxIter, maxCheck, threshold, 50000, 1000000, 60));
         log.info("约束信息");
         log.info("最小太阳遮蔽角：{}",90.0);
         log.info("最小月球遮蔽角：{}",60.0);
         log.info("最小地气光角度：{}",0);
-        log.info("最近距离：{},最远距离：{}",50,1000);
+        log.info("最近距离：{} km,最远距离：{}",50,1000);
         log.info("最短事件窗口：{}",60);
         log.info("--------------------------------------------------------------------------------");
         // 设置初始时间段
