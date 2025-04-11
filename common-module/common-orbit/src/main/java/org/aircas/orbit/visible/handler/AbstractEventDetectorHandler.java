@@ -152,7 +152,7 @@ public abstract class AbstractEventDetectorHandler extends EventDetectorHandler 
             endDate = startDate.shiftedBy(timeUnit, TimeUnit.DAYS);
         }
 
-        if (endDate.isAfter(inputTimeWindow.getEndDate())) {
+        if (endDate.isAfterOrEqualTo(inputTimeWindow.getEndDate())) {
             TimeWindow interval = new TimeWindow();
             interval.setStartDate(startDate);
             interval.setEndDate(inputTimeWindow.getEndDate());

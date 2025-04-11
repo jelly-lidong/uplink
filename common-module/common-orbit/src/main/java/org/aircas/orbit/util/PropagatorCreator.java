@@ -24,6 +24,15 @@ import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
 import org.orekit.utils.IERSConventions;
+import org.orekit.propagation.analytical.tle.TLE;
+import org.orekit.propagation.analytical.tle.TLEPropagator;
+import org.orekit.forces.drag.DragForce;
+import org.orekit.forces.drag.IsotropicDrag;
+import org.orekit.forces.gravity.ThirdBodyAttraction;
+import org.orekit.forces.radiation.IsotropicRadiationSingleCoefficient;
+import org.orekit.forces.radiation.SolarRadiationPressure;
+import org.orekit.bodies.CelestialBodyFactory;
+import org.orekit.bodies.OneAxisEllipsoid;
 
 @Slf4j
 public class PropagatorCreator {
@@ -128,22 +137,52 @@ public class PropagatorCreator {
         final NumericalPropagator propagator = new NumericalPropagator(integrator);
         propagator.setOrbitType(propagationType);
 
-        // 力模型（简化为扰动重力场）
+        // 添加各种摄动力模型
+        
+        // 1. 添加地球引力场摄动 - 提高阶数精度以与STK匹配（通常STK使用70阶）
         final NormalizedSphericalHarmonicsProvider provider =
-            GravityFieldFactory.getNormalizedProvider(10, 10);
+            GravityFieldFactory.getNormalizedProvider(70, 70); // 提高至70阶70次，接近STK默认设置
         final ForceModel holmesFeatherstone =
-            new HolmesFeatherstoneAttractionModel(FramesFactory.getITRF(IERSConventions.IERS_2010,
-                true),
-                provider);
-
-        // 将力模型添加到传播器中
+            new HolmesFeatherstoneAttractionModel(FramesFactory.getITRF(IERSConventions.IERS_2010, true), provider);
         propagator.addForceModel(holmesFeatherstone);
+        
+        try {
+            /* 暂时注释掉大气阻力模型，因为缺少合适的实现类
+            */
+            
+            // 3. 添加太阳辐射压力摄动 - 特别影响高轨道、GEO卫星
+            /* 暂时注释掉太阳辐射压力模型，等待找到正确的API
+            double crossSectionRadiation = 10.0; // 卫星受辐射的有效面积(m²)
+            double radiationCoefficient = 1.3;   // 辐射压力系数，典型值1.2-1.4
+            
+            IsotropicRadiationSingleCoefficient radiationModel = 
+                new IsotropicRadiationSingleCoefficient(crossSectionRadiation, radiationCoefficient);
+            
+            // 根据当前Orekit版本修改构造函数
+            SolarRadiationPressure srp = new SolarRadiationPressure(
+                Constants.WGS84_EARTH_EQUATORIAL_RADIUS,
+                CelestialBodyFactory.getSun(), 
+                1.0,  // 太阳光压值, AU处的标准值为1.0
+                radiationModel);
+                
+            propagator.addForceModel(srp);
+            */
+            
+            // 4. 添加第三体引力摄动 - 月球和太阳引力的影响
+            ThirdBodyAttraction moonAttraction = new ThirdBodyAttraction(CelestialBodyFactory.getMoon());
+            propagator.addForceModel(moonAttraction);
+            
+            ThirdBodyAttraction sunAttraction = new ThirdBodyAttraction(CelestialBodyFactory.getSun());
+            propagator.addForceModel(sunAttraction);
+            
+        } catch (Exception e1) {
+            log.error("添加摄动力模型失败: {}", e1.getMessage());
+            // 即使某些摄动力添加失败，仍然继续使用已有的模型
+        }
 
         // 在传播器中设置初始状态
         propagator.setInitialState(initialState);
 
-        // 设置步长处理器
-        //propagator.getMultiplexer().add(60., new TutorialStepHandler());
         return propagator;
     }
 
@@ -170,9 +209,19 @@ public class PropagatorCreator {
 
                 // 设置轨道类型和位置角类型
                 newPropagator.setOrbitType(initialState.getOrbit().getType());
-
+                
                 return newPropagator;
 
+            } else if (original instanceof TLEPropagator) {
+                // 处理SGP4传播器（TLEPropagator）
+                TLEPropagator tlePropagator = (TLEPropagator) original;
+                
+                // 从原始传播器获取TLE数据
+                TLE originalTLE = tlePropagator.getTLE();
+                
+                // 创建新的TLEPropagator实例
+                return TLEPropagator.selectExtrapolator(originalTLE);
+                
             } else if (original instanceof KeplerianPropagator) {
                 // 处理开普勒传播器
                 return new KeplerianPropagator(original.getInitialState().getOrbit());

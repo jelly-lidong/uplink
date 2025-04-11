@@ -46,15 +46,15 @@
       <artifactId>springfox-swagger-ui</artifactId>
     </dependency>
 
-<!--    <dependency>-->
-<!--      <groupId>com.alibaba.cloud</groupId>-->
-<!--      <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>-->
-<!--    </dependency>-->
-<!--    &lt;!&ndash; Spring Cloud Starter OpenFeign &ndash;&gt;-->
-<!--    <dependency>-->
-<!--      <groupId>org.springframework.cloud</groupId>-->
-<!--      <artifactId>spring-cloud-starter-openfeign</artifactId>-->
-<!--    </dependency>-->
+    <dependency>
+      <groupId>com.alibaba.cloud</groupId>
+      <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+    </dependency>
+    <!-- Spring Cloud Starter OpenFeign -->
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-openfeign</artifactId>
+    </dependency>
 
     <!-- Spring Boot Starter Web Services -->
     <dependency>

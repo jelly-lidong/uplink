@@ -47,8 +47,8 @@ public class MainApp {
         // 添加约束
         manager.addConstraint(new SolarExclusionEventHandler(maxIter, maxCheck, threshold, 90.0, 60))
                 .addConstraint(new LunarExclusionEventHandler(maxIter, maxCheck, threshold, 60.0, 60))
-                .addConstraint(new EarthAtmosphereExclusionEventHandler(maxIter, maxCheck, threshold, 0, 60))
-                .addConstraint(new DistanceExclusionEventHandler(maxIter, maxCheck, threshold, 50000, 1000000, 60));
+                .addConstraint(new EarthAtmosphereExclusionEventHandler(maxIter, maxCheck, threshold, 0, 60));
+                //.addConstraint(new DistanceExclusionEventHandler(maxIter, maxCheck, threshold, 50000, 1000000, 60));
         log.info("约束信息");
         log.info("最小太阳遮蔽角：{}",90.0);
         log.info("最小月球遮蔽角：{}",60.0);
@@ -58,7 +58,7 @@ public class MainApp {
         log.info("--------------------------------------------------------------------------------");
         // 设置初始时间段
         AbsoluteDate startDate = new AbsoluteDate(2025, 4, 5, 0, 0, 0.0, TimeScalesFactory.getUTC());
-        AbsoluteDate endDate = new AbsoluteDate(2025, 4, 10, 0, 0, 0.0, TimeScalesFactory.getUTC());
+        AbsoluteDate endDate = new AbsoluteDate(2025, 4, 6, 0, 0, 0.0, TimeScalesFactory.getUTC());
         log.info("开始时间：{}",startDate.toString().substring(0,19));
         log.info("结束时间：{}",endDate.toString().substring(0,19));
         log.info("--------------------------------------------------------------------------------");
@@ -127,4 +127,8 @@ public class MainApp {
         log.info("--------------------------------------------------------------------------------");
         return PropagatorCreator.createNumericalPropagator(keplerianElements);
     }
+
+    // 姿态四元数（卫星姿态信息） 每个任务都要加
+    // 面板测量 面板对日的情况
+    // 张赞 392477
 }
