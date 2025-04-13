@@ -46,8 +46,8 @@ public class MainApp {
         double threshold = 0.001;
 
         // 添加约束
-        manager.addConstraint(new SolarExclusionEventHandler(maxIter, maxCheck, threshold, 90.0, 60));
-                //.addConstraint(new LunarExclusionEventHandler(maxIter, maxCheck, threshold, 60.0, 60));
+        manager.addConstraint(new SolarExclusionEventHandler(maxIter, maxCheck, threshold, 90.0, 60))
+                .addConstraint(new LunarExclusionEventHandler(maxIter, maxCheck, threshold, 60.0, 60));
                 //.addConstraint(new EarthAtmosphereExclusionEventHandler(maxIter, maxCheck, threshold, 60, 60));
                 //.addConstraint(new DistanceExclusionEventHandler(maxIter, maxCheck, threshold, 50000, 1000000, 60));
         log.info("约束信息");
@@ -109,7 +109,7 @@ public class MainApp {
 
     private static NumericalPropagator getNumericalPropagator() {
         KeplerianElements keplerianElements = new KeplerianElements();
-        keplerianElements.setA(6945.05);
+        keplerianElements.setA(6945050);
         keplerianElements.setE(0.00148767);
         keplerianElements.setI(Math.toRadians(97.7235));
         keplerianElements.setPa(Math.toRadians(96.9374));
