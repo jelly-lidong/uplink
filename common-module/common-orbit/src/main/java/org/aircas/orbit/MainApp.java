@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 
 import lombok.extern.slf4j.Slf4j;
 import org.aircas.orbit.model.TimeWindow;
+import org.aircas.orbit.util.NumericalPropagatorUtils;
 import org.aircas.orbit.util.OrbitUtil;
 import org.aircas.orbit.util.PropagatorCreator;
 import org.aircas.orbit.visible.ConstraintManager;
@@ -125,7 +126,7 @@ public class MainApp {
         log.info("平近点角: {}", Math.toDegrees(keplerianElements.getMeanMotion()));
         log.info("历元时间: {}", keplerianElements.getEpoch());
         log.info("--------------------------------------------------------------------------------");
-        return PropagatorCreator.createNumericalPropagator(keplerianElements);
+        return NumericalPropagatorUtils.createNumericalPropagator(keplerianElements);
     }
 
     // 姿态四元数（卫星姿态信息） 每个任务都要加
