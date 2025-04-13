@@ -1,13 +1,23 @@
 package org.aircas.orbit.visible.detector;
 
 import lombok.extern.slf4j.Slf4j;
+import org.aircas.orbit.MainApp;
+import org.aircas.orbit.model.TimeWindow;
+import org.aircas.orbit.util.OrbitUtil;
 import org.aircas.orbit.visible.TimeWinCallback;
+import org.aircas.orbit.visible.handler.impl.SolarExclusionEventHandler;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
+import org.hipparchus.ode.events.Action;
 import org.orekit.bodies.CelestialBodyFactory;
 import org.orekit.propagation.Propagator;
 import org.orekit.propagation.SpacecraftState;
+import org.orekit.propagation.analytical.tle.TLEPropagator;
 import org.orekit.propagation.events.AdaptableInterval;
+import org.orekit.propagation.events.EventDetector;
 import org.orekit.propagation.events.handlers.EventHandler;
+import org.orekit.propagation.numerical.NumericalPropagator;
+import org.orekit.time.AbsoluteDate;
+import org.orekit.time.TimeScalesFactory;
 
 /**
  * 太阳排除事件检测器
@@ -63,7 +73,8 @@ public class SolarExclusionEventDetector extends BaseObservationDetector<SolarEx
 
     @Override
     public double g(SpacecraftState s) {
-        Vector3D sunPosition = CelestialBodyFactory.getSun().getPVCoordinates(s.getDate(), inertialFrame).getPosition();
+        AbsoluteDate date          = s.getDate();
+        Vector3D sunPosition = CelestialBodyFactory.getSun().getPVCoordinates(date, inertialFrame).getPosition();
         Vector3D satellitePosition = s.getPVCoordinates().getPosition();
         Vector3D satelliteToSun = sunPosition.subtract(satellitePosition);
         Vector3D satelliteToTarget = getRelativePosition(s);
@@ -71,5 +82,45 @@ public class SolarExclusionEventDetector extends BaseObservationDetector<SolarEx
         double angle = calculateAngle(satelliteToSun, satelliteToTarget);
         //log.info("太阳遮蔽角：{}",Math.toDegrees(angle) - thresholdAngle);
         return Math.toDegrees(angle) - thresholdAngle;
+    }
+
+
+    public static void main(String[] args) {
+        OrbitUtil.loadOrekitEnv();
+        AbsoluteDate               startDate = new AbsoluteDate(2025, 4, 5, 0, 0, 0.0, TimeScalesFactory.getUTC());
+        AbsoluteDate               endDate   = new AbsoluteDate(2025, 4, 5, 17, 0, 0.0, TimeScalesFactory.getUTC());
+
+        // 定义轨道参数
+        NumericalPropagator satellitePropagator = MainApp.getNumericalPropagator();
+        // 定义目标TLE
+        TLEPropagator targetPropagator = MainApp.getTlePropagator();
+
+        SolarExclusionEventDetector detector = new SolarExclusionEventDetector(targetPropagator, 60, 100, AdaptableInterval.of(60), 0.1, new EventHandler() {
+            @Override
+            public Action eventOccurred(SpacecraftState s, EventDetector detector, boolean increasing) {
+                if (increasing){
+                    log.info("开始：{}", s.getDate());
+                }else{
+                    log.info("结束：{}", s.getDate());
+                }
+                return Action.CONTINUE;
+            }
+        });
+
+        // 在传播之前验证初始状态
+        SpacecraftState initialState = satellitePropagator.getInitialState();
+
+        // 检查初始状态
+        if (detector.g(initialState) > 0) {
+            log.error("开始：{}",initialState.getDate());
+        }
+
+        satellitePropagator.addEventDetector(detector);
+
+        // 传播到结束时间，并在过程中验证状态
+        SpacecraftState finalState = satellitePropagator.propagate(startDate, endDate);
+        if (detector.g(finalState) > 0) {
+            log.error("结束：{}",finalState.getDate());
+        }
     }
 }

@@ -1,6 +1,7 @@
 package org.aircas.orbit.visible.detector;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.propagation.Propagator;
@@ -34,6 +35,7 @@ import org.orekit.propagation.events.handlers.EventHandler;
  * </ul>
  * </p>
  */
+@Slf4j
 @Getter
 public class EarthAtmosphereExclusionDetector extends BaseObservationDetector<EarthAtmosphereExclusionDetector> {
 
@@ -114,14 +116,14 @@ public class EarthAtmosphereExclusionDetector extends BaseObservationDetector<Ea
         Vector3D satelliteToEarth = earthPosition.subtract(satellitePosition);
 
         // 计算目标与地心方向的夹角
-        double angle = Vector3D.angle(satelliteToTarget, satelliteToEarth);
+        double angle = Math.toDegrees(Vector3D.angle(satelliteToTarget, satelliteToEarth));
 
+        log.info("目标-卫星-地心的夹角: {}°", angle);
         // 计算地球和大气层的视半径
         double earthRadius = earth.getEquatorialRadius();
-        double totalRadius = earthRadius + minAtmosphereAngle;
-        
+
         // 计算从卫星位置看到的地球大气层的视半径
-        double apparentRadius = Math.asin(earthRadius / satelliteToEarth.getNorm());
+        double apparentRadius = Math.toDegrees(Math.asin(earthRadius / satelliteToEarth.getNorm()));
 
         // 如果夹角大于视半径，表示目标不在地球大气层背景中
         // 返回正值表示满足观测条件，负值表示不满足

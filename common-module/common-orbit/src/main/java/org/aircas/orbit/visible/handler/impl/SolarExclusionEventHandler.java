@@ -2,13 +2,19 @@ package org.aircas.orbit.visible.handler.impl;
 
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import org.aircas.orbit.MainApp;
 import org.aircas.orbit.model.TimeWindow;
+import org.aircas.orbit.util.OrbitUtil;
 import org.aircas.orbit.visible.TimeWinCallback;
 import org.aircas.orbit.visible.detector.SolarExclusionEventDetector;
 import org.aircas.orbit.visible.handler.AbstractEventDetectorHandler;
 import org.orekit.propagation.Propagator;
+import org.orekit.propagation.analytical.tle.TLEPropagator;
 import org.orekit.propagation.events.AdaptableInterval;
 import org.orekit.propagation.events.EventDetector;
+import org.orekit.propagation.numerical.NumericalPropagator;
+import org.orekit.time.AbsoluteDate;
+import org.orekit.time.TimeScalesFactory;
 
 /**
  * 太阳排除事件处理器
@@ -95,6 +101,27 @@ public class SolarExclusionEventHandler extends AbstractEventDetectorHandler {
     @Override
     protected EventDetector createDetector(Propagator targetPropagator, List<TimeWindow> timeIntervals, TimeWinCallback winCallback) {
         return new SolarExclusionEventDetector(targetPropagator, minSolarThresholdAngle, maxIter, AdaptableInterval.of(maxCheck), threshold, createDefaultHandler(timeIntervals,winCallback));
+    }
+
+    public static void main(String[] args) {
+        OrbitUtil.loadOrekitEnv();
+        SolarExclusionEventHandler handler   = new SolarExclusionEventHandler(100, 60, 0.1, 90, 60);
+        AbsoluteDate              startDate = new AbsoluteDate(2025, 4, 5, 0, 0, 0.0, TimeScalesFactory.getUTC());
+        AbsoluteDate               endDate   = new AbsoluteDate(2025, 4, 5, 17, 0, 0.0, TimeScalesFactory.getUTC());
+
+
+
+        // 定义轨道参数
+        NumericalPropagator satellitePropagator = MainApp.getNumericalPropagator();
+
+        // 定义目标TLE
+        TLEPropagator targetPropagator = MainApp.getTlePropagator();
+        handler.calculate(satellitePropagator, targetPropagator, new TimeWindow(startDate, endDate), new TimeWinCallback() {
+            @Override
+            public void notify(TimeWindow timeInterval) {
+                log.warn("时间窗口: {} - {}", timeInterval.getStartDate(), timeInterval.getEndDate());
+            }
+        });
     }
 
 }

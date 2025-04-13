@@ -1,7 +1,5 @@
 package org.aircas.orbit.visible.handler;
 
-import static java.util.concurrent.TimeUnit.DAYS;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -10,7 +8,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
 import lombok.extern.slf4j.Slf4j;
 import org.aircas.orbit.model.TimeWindow;
 import org.aircas.orbit.util.PropagatorCreator;
@@ -29,18 +26,18 @@ public abstract class AbstractEventDetectorHandler extends EventDetectorHandler 
 
     protected final double maxCheck;  // 检查间隔
     protected final double threshold; // 检测阈值
-    protected final int maxIter;     // 最大迭代次数
+    protected final int    maxIter;     // 最大迭代次数
     protected final double minWindowDuration; // 最短窗口时长（秒）
 
-    private static final int CORE_POOL_SIZE = Runtime.getRuntime().availableProcessors();
-    private static final int MAX_POOL_SIZE = CORE_POOL_SIZE * 2;
+    private static final int  CORE_POOL_SIZE  = Runtime.getRuntime().availableProcessors();
+    private static final int  MAX_POOL_SIZE   = CORE_POOL_SIZE * 2;
     private static final long KEEP_ALIVE_TIME = 60L;
-    private static final int QUEUE_CAPACITY = 1000;
+    private static final int  QUEUE_CAPACITY  = 1000;
 
     protected AbstractEventDetectorHandler(double maxCheck, double threshold, int maxIter, double minWindowDuration) {
-        this.maxCheck = maxCheck;
+        this.maxCheck  = maxCheck;
         this.threshold = threshold;
-        this.maxIter = maxIter;
+        this.maxIter   = maxIter;
 
         if (minWindowDuration < 0) {
             throw new IllegalArgumentException("最短窗口时长不能为负值");
@@ -53,16 +50,16 @@ public abstract class AbstractEventDetectorHandler extends EventDetectorHandler 
      */
     private class WindowCalculationTask implements Runnable {
 
-        private final Propagator satellitePropagator;
-        private final Propagator targetPropagator;
-        private final TimeWindow timeWindow;
+        private final Propagator      satellitePropagator;
+        private final Propagator      targetPropagator;
+        private final TimeWindow      timeWindow;
         private final TimeWinCallback winCallback;
 
         public WindowCalculationTask(Propagator satellitePropagator, Propagator targetPropagator, TimeWindow timeWindow, TimeWinCallback winCallback) {
-            this.winCallback = winCallback;
+            this.winCallback         = winCallback;
             this.satellitePropagator = PropagatorCreator.clonePropagator(satellitePropagator);
-            this.targetPropagator = PropagatorCreator.clonePropagator(targetPropagator);
-            this.timeWindow = timeWindow;
+            this.targetPropagator    = PropagatorCreator.clonePropagator(targetPropagator);
+            this.timeWindow          = timeWindow;
         }
 
 
@@ -73,7 +70,7 @@ public abstract class AbstractEventDetectorHandler extends EventDetectorHandler 
                 satellitePropagator.clearEventsDetectors();
 
                 AbsoluteDate startDate = timeWindow.getStartDate();
-                AbsoluteDate endDate = timeWindow.getEndDate();
+                AbsoluteDate endDate   = timeWindow.getEndDate();
 
                 // 创建检测器
                 EventDetector detector = createDetector(targetPropagator, tmpWins, winCallback);
@@ -120,7 +117,7 @@ public abstract class AbstractEventDetectorHandler extends EventDetectorHandler 
                 Orbit orbit = state.getOrbit();
                 if (orbit instanceof KeplerianOrbit) {
                     KeplerianOrbit kep = (KeplerianOrbit) orbit;
-                    double ecc = kep.getE();
+                    double         ecc = kep.getE();
                     if (ecc < 0 || Double.isNaN(ecc)) {
                         throw new IllegalStateException(String.format("%s的偏心率无效: %f", phase, ecc));
                     }
@@ -135,21 +132,22 @@ public abstract class AbstractEventDetectorHandler extends EventDetectorHandler 
 
     @Override
     public void calculate(Propagator satellitePropagator, Propagator targetPropagator, TimeWindow inputTimeWindow, TimeWinCallback callback) throws RuntimeException {
-        ExecutorService executorService = new ThreadPoolExecutor(CORE_POOL_SIZE, MAX_POOL_SIZE, KEEP_ALIVE_TIME, TimeUnit.SECONDS, new LinkedBlockingQueue<>(QUEUE_CAPACITY), new ThreadPoolExecutor.CallerRunsPolicy());
+        ExecutorService executorService = new ThreadPoolExecutor(CORE_POOL_SIZE, MAX_POOL_SIZE, KEEP_ALIVE_TIME, TimeUnit.SECONDS, new LinkedBlockingQueue<>(QUEUE_CAPACITY),
+            new ThreadPoolExecutor.CallerRunsPolicy());
         // 创建所有任务
         // 计算每个任务的窗口数量,按照天数划分
-        int timeUnit = 1;
+        int          timeUnit  = 1;
         AbsoluteDate startDate = inputTimeWindow.getStartDate();
-        AbsoluteDate endDate = startDate.shiftedBy(timeUnit, TimeUnit.DAYS);
+        AbsoluteDate endDate   = startDate.shiftedBy(timeUnit, TimeUnit.DAYS);
 
         List<Future<?>> futures = new ArrayList<>();
         while (endDate.isBefore(inputTimeWindow.getEndDate())) {
             TimeWindow interval = new TimeWindow();
             interval.setStartDate(startDate);
             interval.setEndDate(endDate);
-            futures.add( executorService.submit(new WindowCalculationTask(satellitePropagator, targetPropagator, interval, callback)));
+            futures.add(executorService.submit(new WindowCalculationTask(satellitePropagator, targetPropagator, interval, callback)));
             startDate = endDate;
-            endDate = startDate.shiftedBy(timeUnit, TimeUnit.DAYS);
+            endDate   = startDate.shiftedBy(timeUnit, TimeUnit.DAYS);
         }
 
         if (endDate.isAfterOrEqualTo(inputTimeWindow.getEndDate())) {
@@ -158,7 +156,10 @@ public abstract class AbstractEventDetectorHandler extends EventDetectorHandler 
             interval.setEndDate(inputTimeWindow.getEndDate());
             futures.add(executorService.submit(new WindowCalculationTask(satellitePropagator, targetPropagator, interval, callback)));
         }
-
+//        TimeWindow interval = new TimeWindow();
+//        interval.setStartDate(startDate);
+//        interval.setEndDate(endDate);
+//        futures.add(executorService.submit(new WindowCalculationTask(satellitePropagator, targetPropagator, interval, callback)));
         for (Future<?> future : futures) {
             try {
                 future.get();
@@ -189,6 +190,7 @@ public abstract class AbstractEventDetectorHandler extends EventDetectorHandler 
                 TimeWindow lastInterval = timeIntervals.get(timeIntervals.size() - 1);
                 lastInterval.setEndDate(s.getDate());
                 if (isValidWindow(lastInterval)) {
+                    //log.info("【{}】，检测到事件，窗口：{} - {}", getName(), lastInterval.getStartDate().toString().substring(0,19), lastInterval.getEndDate().toString().substring(0,19));
                     winCallback.notify(lastInterval);
                 }
             }

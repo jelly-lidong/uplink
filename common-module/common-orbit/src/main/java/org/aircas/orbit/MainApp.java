@@ -41,13 +41,13 @@ public class MainApp {
         ConstraintManager manager = new ConstraintManager();
 
         int maxIter = 100;
-        double maxCheck = 30;
+        double maxCheck =10;
         double threshold = 0.001;
 
         // 添加约束
-        manager.addConstraint(new SolarExclusionEventHandler(maxIter, maxCheck, threshold, 90.0, 60))
-                .addConstraint(new LunarExclusionEventHandler(maxIter, maxCheck, threshold, 60.0, 60))
-                .addConstraint(new EarthAtmosphereExclusionEventHandler(maxIter, maxCheck, threshold, 0, 60));
+        manager.addConstraint(new SolarExclusionEventHandler(maxIter, maxCheck, threshold, 90.0, 60));
+                //.addConstraint(new LunarExclusionEventHandler(maxIter, maxCheck, threshold, 60.0, 60));
+                //.addConstraint(new EarthAtmosphereExclusionEventHandler(maxIter, maxCheck, threshold, 30, 60));
                 //.addConstraint(new DistanceExclusionEventHandler(maxIter, maxCheck, threshold, 50000, 1000000, 60));
         log.info("约束信息");
         log.info("最小太阳遮蔽角：{}",90.0);
@@ -58,7 +58,7 @@ public class MainApp {
         log.info("--------------------------------------------------------------------------------");
         // 设置初始时间段
         AbsoluteDate startDate = new AbsoluteDate(2025, 4, 5, 0, 0, 0.0, TimeScalesFactory.getUTC());
-        AbsoluteDate endDate = new AbsoluteDate(2025, 4, 6, 0, 0, 0.0, TimeScalesFactory.getUTC());
+        AbsoluteDate endDate = new AbsoluteDate(2025, 4, 5, 17, 0, 0.0, TimeScalesFactory.getUTC());
         log.info("开始时间：{}",startDate.toString().substring(0,19));
         log.info("结束时间：{}",endDate.toString().substring(0,19));
         log.info("--------------------------------------------------------------------------------");
@@ -93,7 +93,7 @@ public class MainApp {
     }
 
 
-    private static TLEPropagator getTlePropagator() {
+    public static TLEPropagator getTlePropagator() {
         String line1 = "1 25544U 98067A   20344.52777778  .00001264  00000-0  29611-4 0  9993";
         String line2 = "2 25544  51.6460  21.4613 0007417  45.5487 314.5526 15.49112347256347";
         TLE targetTLE = new TLE(line1, line2);
@@ -106,7 +106,7 @@ public class MainApp {
     }
 
 
-    private static NumericalPropagator getNumericalPropagator() {
+    public static NumericalPropagator getNumericalPropagator() {
         KeplerianElements keplerianElements = new KeplerianElements();
         keplerianElements.setA(6945045.1);
         keplerianElements.setE(0.0014876690693199635);
