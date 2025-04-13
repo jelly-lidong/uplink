@@ -45,9 +45,9 @@ public class MainApp {
         double threshold = 0.001;
 
         // 添加约束
-        manager.addConstraint(new SolarExclusionEventHandler(maxIter, maxCheck, threshold, 90.0, 60))
-                .addConstraint(new LunarExclusionEventHandler(maxIter, maxCheck, threshold, 60.0, 60))
-                .addConstraint(new EarthAtmosphereExclusionEventHandler(maxIter, maxCheck, threshold, 0, 60));
+        manager.addConstraint(new SolarExclusionEventHandler(maxIter, maxCheck, threshold, 90.0, 60));
+                //.addConstraint(new LunarExclusionEventHandler(maxIter, maxCheck, threshold, 60.0, 60));
+                //.addConstraint(new EarthAtmosphereExclusionEventHandler(maxIter, maxCheck, threshold, 60, 60));
                 //.addConstraint(new DistanceExclusionEventHandler(maxIter, maxCheck, threshold, 50000, 1000000, 60));
         log.info("约束信息");
         log.info("最小太阳遮蔽角：{}",90.0);
@@ -108,13 +108,13 @@ public class MainApp {
 
     private static NumericalPropagator getNumericalPropagator() {
         KeplerianElements keplerianElements = new KeplerianElements();
-        keplerianElements.setA(6945045.1);
-        keplerianElements.setE(0.0014876690693199635);
-        keplerianElements.setI(Math.toRadians(97.72345918416977));
-        keplerianElements.setPa(Math.toRadians(96.93742203712463));
-        keplerianElements.setRaan(Math.toRadians(122.43375301361084));
-        keplerianElements.setMeanMotion(Math.toRadians(289.12911636829376));
-        keplerianElements.setEpoch(new AbsoluteDate(2025, 4, 5, 0, 0, 0.0, TimeScalesFactory.getUTC()));
+        keplerianElements.setA(6945.05);
+        keplerianElements.setE(0.00148767);
+        keplerianElements.setI(Math.toRadians(97.7235));
+        keplerianElements.setPa(Math.toRadians(96.9374));
+        keplerianElements.setRaan(Math.toRadians(122.434));
+        keplerianElements.setMeanMotion(Math.toRadians(289.129));
+        keplerianElements.setEpoch(new AbsoluteDate(2025, 4, 5, 0, 0, 0, TimeScalesFactory.getUTC()));
         keplerianElements.setAnomalyType(PositionAngleType.MEAN);
         log.info("任务卫星轨道六根数");
         log.info("半长轴: {}", keplerianElements.getA());

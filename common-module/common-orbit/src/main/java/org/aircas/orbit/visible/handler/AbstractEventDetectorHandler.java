@@ -60,8 +60,8 @@ public abstract class AbstractEventDetectorHandler extends EventDetectorHandler 
 
         public WindowCalculationTask(Propagator satellitePropagator, Propagator targetPropagator, TimeWindow timeWindow, TimeWinCallback winCallback) {
             this.winCallback = winCallback;
-            this.satellitePropagator = PropagatorCreator.clonePropagator(satellitePropagator);
-            this.targetPropagator = PropagatorCreator.clonePropagator(targetPropagator);
+            this.satellitePropagator = satellitePropagator;//PropagatorCreator.clonePropagator(satellitePropagator);
+            this.targetPropagator = targetPropagator; //PropagatorCreator.clonePropagator(targetPropagator);
             this.timeWindow = timeWindow;
         }
 
@@ -106,6 +106,7 @@ public abstract class AbstractEventDetectorHandler extends EventDetectorHandler 
                     }
                 }
             } catch (Exception e) {
+                e.printStackTrace();
                 log.error("计算时间窗口发生错误: {}", e.getMessage());
                 // 不抛出异常，返回空结果
                 tmpWins.clear();

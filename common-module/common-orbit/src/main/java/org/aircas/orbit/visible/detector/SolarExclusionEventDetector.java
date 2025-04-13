@@ -8,6 +8,7 @@ import org.orekit.propagation.Propagator;
 import org.orekit.propagation.SpacecraftState;
 import org.orekit.propagation.events.AdaptableInterval;
 import org.orekit.propagation.events.handlers.EventHandler;
+import org.orekit.time.AbsoluteDate;
 
 /**
  * 太阳排除事件检测器
@@ -63,13 +64,15 @@ public class SolarExclusionEventDetector extends BaseObservationDetector<SolarEx
 
     @Override
     public double g(SpacecraftState s) {
-        Vector3D sunPosition = CelestialBodyFactory.getSun().getPVCoordinates(s.getDate(), inertialFrame).getPosition();
+        AbsoluteDate date          = s.getDate();
+        Vector3D sunPosition = CelestialBodyFactory.getSun().getPVCoordinates(date, inertialFrame).getPosition();
         Vector3D satellitePosition = s.getPVCoordinates().getPosition();
         Vector3D satelliteToSun = sunPosition.subtract(satellitePosition);
         Vector3D satelliteToTarget = getRelativePosition(s);
 
-        double angle = calculateAngle(satelliteToSun, satelliteToTarget);
+        double angle = Math.toDegrees(calculateAngle(satelliteToSun, satelliteToTarget));
+        log.info("太阳遮蔽角：date:{}, angle:{}",date.toString().substring(0,19), angle);
         //log.info("太阳遮蔽角：{}",Math.toDegrees(angle) - thresholdAngle);
-        return Math.toDegrees(angle) - thresholdAngle;
+        return angle - thresholdAngle;
     }
 }
